@@ -43,14 +43,14 @@ decompilationOutputFile = fopen(argv[2], "w");
   
   fprintf(stdout, "Compilation successful!\n");
   fprintf(stdout, "Generated AST:\n\n");
-  //astPrint(mainAST, 0);
+  astPrint(mainAST, 0);
   
-  /*
+  
   fprintf(stdout, "\n\n\t...Decompiling...\n");
-  decompile(decompilationOutputFile, mainAST);
+  //decompile(decompilationOutputFile, mainAST);
   fprintf(stdout, "\n\n=========================================================================\n\n");
   fprintf(stdout, "\n\nDecompilation done!\n\n");
-  */
+  
   
   
   

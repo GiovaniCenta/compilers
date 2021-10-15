@@ -1,5 +1,5 @@
 #
-# UFRGS - Compiladores B - Giovani da Silva - 2021/ERE - Etapa 4
+# UFRGS - Compiladores B - Giovani da Silva - 2021/ERE - Etapa 5
 #
 # Makefile for single compiler call
 # All source files must be included from code embedded in scanner.l
@@ -7,14 +7,17 @@
 # and #include "main.c" in the last part of the scanner.l
 #
 
-etapa4: main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o 
-	gcc main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o  -o etapa4
+etapa5: main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o tacs.o
+	gcc main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o  tacs.o -o etapa5
 
 main.o: main.c
 	gcc -c main.c
 
 hash.o: hash.c
 	gcc -c hash.c
+
+tacs.o: tacs.c
+	gcc -c tacs.c
 
 ast.o: ast.c
 	gcc -c ast.c
@@ -42,4 +45,4 @@ lex.yy.c: scanner.l
 	lex scanner.l
 
 clean:
-	rm lex.yy.c y.tab.c y.tab.h *.o etapa4
+	rm lex.yy.c y.tab.c y.tab.h *.o etapa5

@@ -25,15 +25,13 @@ int[15..20]:rangezinho;
 
 int: pizza (int: xddd,int: aaaaa,int: bbbb,int: bbcccc,int: sdasdsa)
   {
-xddd = 10;
-k = 10 + "adads";
-xddd = 15 < 900;
+n=8;
 
   }
 
 int: main(){
-  n = pizza(8,5,'b',10,11);
-  n = aaaaa;
+  
+  n = 10;
  
  
 }

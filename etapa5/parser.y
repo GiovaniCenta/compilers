@@ -3,6 +3,7 @@
     #include "hash.h"
     #include "ast.h"
     #include "semantic.h"
+    #include "tacs.h"
     #include <stdlib.h>
     int yyerror();
     int getLineNumber();
@@ -91,6 +92,7 @@ program: data_decl { $$ = $1;  mainAST = $$;
                 check_undeclared();
                 check_operands($1);
                 check_commands($1);
+                tac_print_backwards(generate_code($1));
                 
                 
                 
