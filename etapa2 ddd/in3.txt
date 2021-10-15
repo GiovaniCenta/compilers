@@ -1,0 +1,6 @@
+data{char: c ='x';int[9..11]:kkkk=10 10 10;char[8..10]:cuscus;}
+int: main (int:x,int:y)
+  {
+    print (aaa);
+    
+  }

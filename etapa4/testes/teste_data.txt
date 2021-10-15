@@ -1,0 +1,2 @@
+data{int:ameixa:5; char:cuscus:'a';
+int:abobora:90;}

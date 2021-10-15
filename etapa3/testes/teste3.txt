@@ -1,0 +1,2 @@
+data{char[10]:arraydechar: 'a' 'b';} 
+{ int:funcao (int:oi , char:aaaa,int:bbbb) { } int:funcao2 () { }}

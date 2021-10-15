@@ -1,0 +1,49 @@
+
+void decl_parameters(AST *node)
+{
+    int n = count_numparam(node);
+    int cont = 0;
+
+    int func_datatype = node->son[0]->symbol->datatype;
+
+    if (node->son[3] == 0 && node->son[2] == 0)
+    {
+        //printf("\n\nentrou no caso vazio\n\n");
+        return 0;
+    }
+    else if (node->son[3] == 0 && node->son[2] != 0)
+    {
+
+        hashInsert(node->son[1]->son[1]->symbol->text, node->son[1]->son[0]->type);
+        parameters_type[cont] = node->son[2]->type;
+        return 1; //caso que tem um parametro apenas
+    }
+    else if (node->son[3] != 0) //caso que tem parameters list
+    {
+        //printf("\n\nentrou no caso que tem mais de um parametro\n\n");
+        int cont = 0;
+        cont++;
+
+        parameters_type[pt] = node->son[1]->son[0]->type;
+        pt++;
+
+        AST *aux;
+
+        aux = node->son[2]->son[1];
+
+        parameters_type[pt] = aux->son[0]->son[0]->type;
+
+        while (cont < n - 1)
+        {
+
+            pt++;
+            if (aux->son[0]->son[0]->type)
+            {
+
+                parameters_type[pt] = aux->son[0]->son[0]->type;
+            }
+            aux = aux->son[1];
+            cont++;
+        }
+    }
+}
