@@ -88,6 +88,7 @@ int hash_check_undeclared(void){
 HASH_NODE* make_temp(){
     static int serial = 0;
     char buffer[256] = "";
+    
 
     // NOTE: the goal here is to not colide with user defined identifiers
     // normally, the compiler does that by changing all user identifier names
@@ -95,4 +96,12 @@ HASH_NODE* make_temp(){
     // distinguish between user defined identifiers and compiler ones 
     sprintf(buffer, "mYWeeirT_emp%d", serial++);
     return hashInsert(buffer, SYMBOL_VARIABLE);
+}
+
+HASH_NODE* make_label(){
+    static int serial = 0;
+    char buffer[256] = "";
+
+    sprintf(buffer, "mYLabule_%d", serial++);
+    hashInsert(buffer, SYMBOL_LABEL);
 }

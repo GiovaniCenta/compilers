@@ -39,16 +39,16 @@ decompilationOutputFile = fopen(argv[2], "w");
       fprintf(stderr, "ERROR! There are : %d  Semantic Errors! \n", semanticErrors);
       exit(4);
     }
-  hashPrint();
+  //hashPrint();
   
-  fprintf(stdout, "Compilation successful!\n");
-  fprintf(stdout, "Generated AST:\n\n");
-  astPrint(mainAST, 0);
+  //fprintf(stdout, "Compilation successful!\n");
+  //fprintf(stdout, "Generated AST:\n\n");
+  //astPrint(mainAST, 0);
   
   
-  fprintf(stdout, "\n\n\t...Decompiling...\n");
+  //fprintf(stdout, "\n\n\t...Decompiling...\n");
   //decompile(decompilationOutputFile, mainAST);
-  fprintf(stdout, "\n\n=========================================================================\n\n");
+  //fprintf(stdout, "\n\n=========================================================================\n\n");
   fprintf(stdout, "\n\nDecompilation done!\n\n");
   
   

@@ -11,6 +11,8 @@ float:floatzinho = 12;
 int: pastel =  1;
 int[5]:pastelzinho;
 int[15..20]:rangezinho;
+int: xddd = 10;
+int:k =5;
 
 
 
@@ -23,18 +25,15 @@ int[15..20]:rangezinho;
 ##ver se foi declarado depois do fim do bloco? ou se foi declarado depois de outra chamada de funcao
 
 
-int: pizza (int: xddd,int: aaaaa,int: bbbb,int: bbcccc,int: sdasdsa)
+int: pizza ()
   {
-n=8;
+rangezinho[18] = 10 + pastel + xddd;
+print "oi";
+until(xddd == 10){
+k = 10 + "adads";};
 
   }
 
-int: main(){
-  
-  n = 10;
- 
- 
-}
 
 
 

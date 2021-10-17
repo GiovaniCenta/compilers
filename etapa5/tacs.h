@@ -34,6 +34,14 @@
 #define TAC_PRINT 23
 #define TAC_READ 24
 
+#define TAC_FUNCTION_CALL 25
+#define TAC_PARAMETER 26
+
+#define TAC_UNTIL 27
+#define TAC_COMEFROM 28
+
+
+
 #define TAC_MOVE 42
 
 typedef struct tac_node{
@@ -52,6 +60,8 @@ void tac_print_backwards(TAC* tac);
 TAC* tac_join(TAC* l1, TAC* l2);
 
 TAC* create_tac_bin_op(int tac_type, TAC* son1, TAC* son2);
+
+
 
 
 // CODE GENERATION

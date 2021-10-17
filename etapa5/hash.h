@@ -47,7 +47,9 @@ HASH_NODE *hashFind(char *text);
 HASH_NODE *hashInsert(char *text,int Lextype);
 void hashPrint(void);
 int hash_check_undeclared(void);
-HASH_NODE* make_temp();
 
+
+HASH_NODE* make_temp();
+HASH_NODE* make_label();
 #endif
 // END
