@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//GIOVANI DA SILVA ERE 2021
+
+
 HASH_NODE *Table[HASH_SIZE];
 
 void hashInit(void)
@@ -90,10 +93,6 @@ HASH_NODE* make_temp(){
     char buffer[256] = "";
     
 
-    // NOTE: the goal here is to not colide with user defined identifiers
-    // normally, the compiler does that by changing all user identifier names
-    // from something like userVar to _userVar. This way it's possible to 
-    // distinguish between user defined identifiers and compiler ones 
     sprintf(buffer, "mYWeeirT_emp%d", serial++);
     return hashInsert(buffer, SYMBOL_VARIABLE);
 }

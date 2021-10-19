@@ -1,9 +1,7 @@
 #include "tacs.h"
 #include <string.h>
 
-// used to know how many init values were
-// given for the vector declaration
-int vec_init_i = 0;
+//GIOVANI DA SILVA ERE 2021
 
 TAC *create_tac_if(TAC *code0, TAC *code1);
 TAC *create_tac_if_else(TAC *code0, TAC *code1, TAC *code2);

@@ -1,5 +1,0 @@
-sftp gsilva@html.inf.ufrgs.br
-cd public_html
-cd qlfmuatlqpixbnrf 
-tar cvzf etapa4.tgz .
-http://www.inf.ufrgs.br/~gsilva/qlfmuatlqpixbnrf/etapa4.tgz
