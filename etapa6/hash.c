@@ -1,9 +1,9 @@
 #include "hash.h"
 #include <stdlib.h>
+#define _OPEN_SYS_ITOA_EXT
 #include <stdio.h>
-
+#include <string.h>
 //GIOVANI DA SILVA ERE 2021
-
 
 HASH_NODE *Table[HASH_SIZE];
 
@@ -67,18 +67,21 @@ void hashPrint(void)
     HASH_NODE *node;
     for (i = 0; i < HASH_SIZE; i++)
         for (node = Table[i]; node; node = node->next)
-            printf("Table[%d] has %s with type %d and datatype %d with %d parameters \n", i, node->text, node->type,node->datatype,node->numparam);
+            printf("Table[%d] has %s with type %d and datatype %d with %d parameters \n", i, node->text, node->type, node->datatype, node->numparam);
 }
 
-int hash_check_undeclared(void){
+int hash_check_undeclared(void)
+{
     int undeclared = 0;
     HASH_NODE *node;
 
+    for (int i = 0; i < HASH_SIZE; i++)
+    {
+        for (node = Table[i]; node; node = node->next)
+        {
 
-    for(int i=0; i<HASH_SIZE; i++){
-        for(node=Table[i]; node; node=node->next){
-
-            if (node->type == SYMBOL_IDENTIFIER){ //i.e. it was inserted on hash, but didn't received a specific type by semantic.c
+            if (node->type == SYMBOL_IDENTIFIER)
+            { //i.e. it was inserted on hash, but didn't received a specific type by semantic.c
                 fprintf(stderr, "(hash)Semantic ERROR! Undeclared identifier: %s\n", node->text);
                 //fprintf(stderr,"      type:%d\n",node->type);
                 ++undeclared;
@@ -88,16 +91,17 @@ int hash_check_undeclared(void){
     return undeclared;
 }
 
-HASH_NODE* make_temp(){
+HASH_NODE *make_temp()
+{
     static int serial = 0;
     char buffer[256] = "";
-    
 
     sprintf(buffer, "mYWeeirT_emp%d", serial++);
     return hashInsert(buffer, SYMBOL_VARIABLE);
 }
 
-HASH_NODE* make_label(){
+HASH_NODE *make_label()
+{
     static int serial = 0;
     char buffer[256] = "";
 
@@ -105,21 +109,27 @@ HASH_NODE* make_label(){
     hashInsert(buffer, SYMBOL_LABEL);
 }
 
-void print_asm(FILE *fout){
+void print_asm(FILE *fout)
+{
 
-    fprintf(fout,   "\n## DATA SECTION\n"
-                    ".data\n");
+    char *nome_strings[100];
+    int j = 0;
+
+    fprintf(fout, "\n## DATA SECTION\n"
+                  ".data\n");
 
     HASH_NODE *node;
-    for(int i=0; i<HASH_SIZE; i++){
-        for(node=Table[i]; node; node=node->next){
-            
+    for (int i = 0; i < HASH_SIZE; i++)
+    {
+        for (node = Table[i]; node; node = node->next)
+        {
+
             switch (node->type)
             {
             case SYMBOL_VARIABLE:
                 fprintf(fout, "_%s: .long\t0\n", node->text);
                 break;
-            
+
             case SYMBOL_VECTOR:
                 fprintf(fout, "_%s: .zero\t400\n", node->text);
                 break;
@@ -127,23 +137,52 @@ void print_asm(FILE *fout){
             case SYMBOL_LIT_INT:
                 fprintf(fout, "_%s: .long\t%s\n", node->text, node->text);
                 break;
-           
-            
+
             case SYMBOL_LIT_CHAR: //CONVERTER PRA ASCII
                 fprintf(fout, "_%s: \t.byte %s\n", node->text, node->text);
                 break;
-            
-            case SYMBOL_LIT_STRING:
-                fprintf(fout, "_%s: .string\t%s\n", node->text, node->text);
-                break;
 
+            case SYMBOL_LIT_STRING:
+                goto Cleanup;
+            Cleanup:;
+
+               
+                char str[50]="str";
+                char output[50];
+                sprintf(output, "%s%d", str, j);
+                fprintf(fout, "_%s: .string\t%s\n", output, node->text);
+                break;
+                
             default:
                 break;
             }
-
         }
     }
 
+    fprintf(fout, ".section .rodata\n");
+}
 
-    fprintf(fout,   ".section .rodata\n");
+char *remove_aspas(char *input)
+{
+    int count = 0;
+    char straux[100];
+    strncpy(straux, input, sizeof straux - 1);
+
+    char *result = straux + 1;
+
+    // removes first character
+    result[strlen(result) - 1] = '\0'; // removes last character
+
+    // Traverse the given string. If current character
+    // is not space, then place it at index 'count++'
+}
+
+char *remove_spaces(char *source, char *target)
+{
+    while (*source++ && *target)
+    {
+        if (!isspace(*source))
+            *target++ = *source;
+    }
+    return target;
 }

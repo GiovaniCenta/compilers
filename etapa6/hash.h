@@ -52,5 +52,6 @@ int hash_check_undeclared(void);
 HASH_NODE* make_temp();
 HASH_NODE* make_label();
 void print_asm(FILE *fout);
+char* remove_aspas(char *str);
 #endif
 // END

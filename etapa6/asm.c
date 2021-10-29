@@ -3,7 +3,7 @@
 #include <string.h>
 
 FILE *fout;
-
+int j = 0;
 void generate_asm(TAC *first)
 {
 
@@ -112,13 +112,31 @@ void asm_endfun()
 
 void asm_print(TAC *tac)
 {
-    fprintf(fout, "## TAC_PRINT\n"
-                  "\tmovl	_%s(%%rip), %%esi\n"
-                  "\tleaq	.printintstr(%%rip), %%rdi\n"
-                  "\tmovl	$0, %%eax\n"
-                  "\tcall	printf@PLT\n"
-                  "\tmovl	$0, %%eax\n",
-            tac->res->text);
+
+    if (tac->res->type = SYMBOL_LIT_STRING)
+    {
+
+        char str[50] = "str";
+        char output[50];
+        sprintf(output, "%s%d", str, j);
+        j++;
+
+        fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
+                      "\tmovl	$0, %%eax\n"
+                      "\tcall	printf@PLT\n"
+                      "\tmovl	$0, %%eax\n",
+                output);
+    }
+    else if (tac->res->type = SYMBOL_LIT_INT)
+    {
+        fprintf(fout, "## TAC_PRINT\n"
+                      "\tmovl	_%s(%%rip), %%esi\n"
+                      "\tleaq	.printintstr(%%rip), %%rdi\n"
+                      "\tmovl	$0, %%eax\n"
+                      "\tcall	puts@PLT\n"
+                      "\tmovl	$0, %%eax\n",
+                tac->res->text);
+    }
 }
 
 TAC *asm_var_declar(TAC *first)

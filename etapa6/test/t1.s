@@ -7,16 +7,9 @@
 	.size	x, 4
 x:
 	.long	10
-	.globl	pastelzinho
-	.align 16
-	.type	pastelzinho, @object
-	.size	pastelzinho, 20
-pastelzinho:
-	.long	1
-	.long	2
-	.long	3
-	.long	4
-	.long	5
+	.section	.rodata
+.LC0:
+	.string	"oiee aqui eh uma \nstring"
 	.text
 	.globl	main
 	.type	main, @function
@@ -29,6 +22,8 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
 	movl	$0, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
