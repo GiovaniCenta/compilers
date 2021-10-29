@@ -1,0 +1,9 @@
+data{
+int:mamao:90;
+char:abacate:'a';
+int:cuscus:97;
+
+
+
+
+}

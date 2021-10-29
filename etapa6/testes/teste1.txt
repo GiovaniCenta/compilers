@@ -1,0 +1,2 @@
+char[10]:arraydechars='a' 'b' 'c' 'd' 'e';
+int[6]:arraydeints=100 99 98 92;

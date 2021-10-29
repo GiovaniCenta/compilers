@@ -1,0 +1,21 @@
+data{
+int:mamao:90;
+char:abacate:'a';
+int:cuscus:97;
+
+
+
+
+}
+{
+int:main(){}
+char:funcao(int:abacate){}
+int:funcao2(int:cuscus,char:ameixa,int:bolinho) {
+a:'d' 
+b:10
+china:'b'
+
+
+
+}
+}

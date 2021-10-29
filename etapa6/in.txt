@@ -1,0 +1,38 @@
+## UFRGS - Compiladores - Marcelo Johann - 2021/1
+
+data {
+
+
+char: z = 'a';
+int:x=10;
+int:y=35;
+int:k=0;
+
+
+
+
+
+}
+
+
+int: main ()
+  {
+    k = x + y;
+    print(x);
+    print(y);
+    print(k);
+
+  }
+
+
+
+
+
+
+  
+
+
+
+  
+
+
