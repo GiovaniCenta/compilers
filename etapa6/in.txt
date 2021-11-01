@@ -4,7 +4,11 @@ data {
 
 
 
-int:x=7;
+
+int[7]:vetor;
+int: ameixa = 7;
+
+
 
 
 
@@ -12,13 +16,18 @@ int:x=7;
 }
 
 
-int: main ()
-  {
-
-print ("oi \nisso aqui \n eh uma string\n") ;
 
 
-  }
+int: main(){
+  vetor[5] = 55;
+  vetor[6] = 77;
+  ameixa = vetor[5] + vetor[6] + 90;
+  print(vetor[6]);
+
+ 
+ 
+}
+
 
 
 

@@ -2,14 +2,17 @@
 # UFRGS - Compiladores B - Giovani da Silva - 2021/ERE - Etapa 6
 #
 
-etapa5: main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o tacs.o asm.o
-	gcc main.o lex.yy.o y.tab.o hash.o ast.o decompiler.o semantic.o  tacs.o asm.o -o etapa6
+etapa5: main.o lex.yy.o y.tab.o hash.o list.o ast.o decompiler.o semantic.o tacs.o asm.o 
+	gcc main.o lex.yy.o y.tab.o hash.o list.o ast.o decompiler.o semantic.o  tacs.o asm.o -o etapa6
 
 main.o: main.c
 	gcc -c main.c
 
 hash.o: hash.c
 	gcc -c hash.c
+
+list.o: list.c
+	gcc -c list.c
 
 tacs.o: tacs.c
 	gcc -c tacs.c

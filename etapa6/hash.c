@@ -3,10 +3,12 @@
 #define _OPEN_SYS_ITOA_EXT
 #include <stdio.h>
 #include <string.h>
+#include "list.h"
 //GIOVANI DA SILVA ERE 2021
 
 HASH_NODE *Table[HASH_SIZE];
-
+char str[50] = "str";
+                char output[50];
 void hashInit(void)
 {
     for (int i = 0; i < HASH_SIZE; i++)
@@ -112,6 +114,8 @@ HASH_NODE *make_label()
 void print_asm(FILE *fout)
 {
 
+    struct Node* head = NULL;
+
     char *nome_strings[100];
     int j = 0;
 
@@ -123,6 +127,10 @@ void print_asm(FILE *fout)
     {
         for (node = Table[i]; node; node = node->next)
         {
+            if(!search(head, node->text))
+            {
+                push(&head, node->text);
+            
 
             switch (node->type)
             {
@@ -143,46 +151,22 @@ void print_asm(FILE *fout)
                 break;
 
             case SYMBOL_LIT_STRING:
-                goto Cleanup;
-            Cleanup:;
+            
 
-               
-                char str[50]="str";
-                char output[50];
+                
                 sprintf(output, "%s%d", str, j);
                 fprintf(fout, "_%s: .string\t%s\n", output, node->text);
-                break;
                 
+                j++;
+                break;
+            
             default:
                 break;
             }
+
+        }
         }
     }
 
     fprintf(fout, ".section .rodata\n");
-}
-
-char *remove_aspas(char *input)
-{
-    int count = 0;
-    char straux[100];
-    strncpy(straux, input, sizeof straux - 1);
-
-    char *result = straux + 1;
-
-    // removes first character
-    result[strlen(result) - 1] = '\0'; // removes last character
-
-    // Traverse the given string. If current character
-    // is not space, then place it at index 'count++'
-}
-
-char *remove_spaces(char *source, char *target)
-{
-    while (*source++ && *target)
-    {
-        if (!isspace(*source))
-            *target++ = *source;
-    }
-    return target;
 }

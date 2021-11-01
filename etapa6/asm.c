@@ -25,6 +25,17 @@ void generate_asm(TAC *first)
             asm_move(tac);
             break;
 
+        case TAC_DECL_VECTOR:
+        {
+            int valor = atoi(tac->op1->text);
+            fprintf(fout, "\t.comm	%s,%d,16\n",tac->res->text,4*valor);
+            break;
+        }
+
+        case TAC_MOVE_VECTOR:
+            asm_move(tac);
+            break;
+
         case TAC_BEGINFUN:
             asm_beginfun(tac);
             break;
@@ -113,27 +124,27 @@ void asm_endfun()
 void asm_print(TAC *tac)
 {
 
-    if (tac->res->type = SYMBOL_LIT_STRING)
+    if (tac->res->type == SYMBOL_LIT_STRING)
     {
 
         char str[50] = "str";
         char output[50];
         sprintf(output, "%s%d", str, j);
         j++;
-
+        fprintf(fout, "## TAC_PRINT_STRING\n");
         fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
                       "\tmovl	$0, %%eax\n"
                       "\tcall	printf@PLT\n"
                       "\tmovl	$0, %%eax\n",
                 output);
     }
-    else if (tac->res->type = SYMBOL_LIT_INT)
+    else
     {
         fprintf(fout, "## TAC_PRINT\n"
                       "\tmovl	_%s(%%rip), %%esi\n"
                       "\tleaq	.printintstr(%%rip), %%rdi\n"
                       "\tmovl	$0, %%eax\n"
-                      "\tcall	puts@PLT\n"
+                      "\tcall	printf@PLT\n"
                       "\tmovl	$0, %%eax\n",
                 tac->res->text);
     }
@@ -151,8 +162,14 @@ TAC *asm_var_declar(TAC *first)
 
     while (tac->type == TAC_MOVE)
     {
-        asm_move(tac);
-        tac = tac->next;
+
+       
+
+        if (tac)
+        {
+            asm_move(tac);
+            tac = tac->next;
+        }
     }
     fprintf(fout, "\tcall\t_main\n");
 
@@ -166,21 +183,23 @@ void asm_move(TAC *tac)
 
     if (tac->op2)
     { //ITS A VECTOR
-        printf("ENTROU AQUI");
-        exit(9);
-        fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
-                      "\tmovl\t_%s(%%rip), %%eax\n"
-                      "\tmovslq\t%%edx, %%rdx\n"
-                      "\tleaq\t0(,%%rdx,4), %%rcx\n"
-                      "\tleaq\t_%s(%%rip), %%rdx\n"
-                      "\tmovl\t%%eax, (%%rcx,%%rdx)\n",
+        
+        //int output;
+        //sprintf(output, "4*%s",tac->op1->text);
+        int valor = atoi(tac->op1->text);
+        fprintf(fout, "## TAC_MOVE_VECTOR\n"
+                    "\tmovl	$%s, %d+%s(%%rip)\n"
+                      "\tmovl	$0, %%eax\n",
                 tac->op2->text,
-                tac->op1->text,
+                4*valor,
                 tac->res->text);
+
+        tac->op1->text = tac->op2->text;
     }
 
     else
     {
+        fprintf(fout, "## TAC_MOVE\n");
         fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
                       "\tmovl\t%%eax, _%s(%%rip)\n",
                 tac->op1->text, tac->res->text);

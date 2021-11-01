@@ -1,5 +1,6 @@
 #include "tacs.h"
 #include <string.h>
+int vec_init_i = 0;
 
 //GIOVANI DA SILVA ERE 2021
 
@@ -121,6 +122,11 @@ void tac_print(TAC *tac)
         fprintf(stderr, "TAC_MOVE");
         break;
 
+    case TAC_MOVE_VECTOR:
+        fprintf(stderr, "TAC_MOVE_VECTOR");
+        break;
+
+
     default:
         fprintf(stderr, "TAC_UNKNOWN");
         break;
@@ -205,7 +211,7 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_IF:
-       
+
         if (code[0])
             result = create_tac_if(code[0], code[1]);
         break;
@@ -241,11 +247,44 @@ TAC *generate_code(AST *node)
         result = tac_join(code[0], tac_create(TAC_MOVE, node->son[1]->symbol, code[2] ? code[2]->res : 0, 0));
         break;
 
+    case AST_VEC_DEC:
+        if (!node->son[2])
+        {
+            astPrint(node->son[0], 0);
+            result = tac_join(code[0], tac_create(TAC_MOVE_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0));
+        }
+        else
+        {
+          
+            result = tac_join(tac_create(TAC_MOVE_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0), code[1]);
+            // note: when reaching AST_VEC_DEC the TAC_MOVE will receive it's symbol and index
+           
+            break;
+        }
+        break;
+
+    case AST_VEC_DEC_RANGE:
+        if (!node->son[2])
+        {
+            astPrint(node->son[0], 0);
+            result = tac_join(code[0], tac_create(TAC_MOVE_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0));
+        }
+        else
+        {
+          
+            result = tac_join(tac_create(TAC_MOVE_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0), code[1]);
+            // note: when reaching AST_VEC_DEC the TAC_MOVE will receive it's symbol and index
+          
+            break;
+        }
+        break;
     case AST_VEC_ATTR:
         result = tac_join(code[2],
-                          tac_create(TAC_MOVE, node->son[0]->symbol, code[1] ? code[1]->res : 0,code[2] ? code[2]->res : 0));
+                          tac_create(TAC_MOVE, node->son[0]->symbol, code[1] ? code[1]->res : 0, code[2] ? code[2]->res : 0));
         //result = code[2];
         break;
+
+    
 
     default:
         result = tac_join(code[0], tac_join(code[1], tac_join(code[2], code[3])));
@@ -261,10 +300,8 @@ TAC *create_tac_if(TAC *code0, TAC *code1)
     TAC *jumptac = 0;
     TAC *labeltac = 0;
     HASH_NODE *newlabel = 0;
-    
 
     newlabel = make_label();
-     
 
     jumptac = tac_create(TAC_IFZ, newlabel, code0 ? code0->res : 0, 0);
     jumptac->prev = code0;

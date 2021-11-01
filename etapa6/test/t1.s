@@ -1,15 +1,9 @@
 	.file	"t1.c"
 	.text
-	.globl	x
-	.data
-	.align 4
-	.type	x, @object
-	.size	x, 4
-x:
-	.long	10
+	.comm	vetor,28,16
 	.section	.rodata
 .LC0:
-	.string	"oiee aqui eh uma \nstring"
+	.string	"%d"
 	.text
 	.globl	main
 	.type	main, @function
@@ -22,10 +16,21 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	$55, 28+vetor(%rip)
+	movl	$7, -4(%rbp)
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
 	leaq	.LC0(%rip), %rdi
-	call	puts@PLT
 	movl	$0, %eax
-	popq	%rbp
+	call	printf@PLT
+	movl	28+vetor(%rip), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$0, %eax
+	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc

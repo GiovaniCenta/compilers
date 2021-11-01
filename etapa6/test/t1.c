@@ -1,9 +1,14 @@
 #include <stdio.h>
 
-int x = 10;
+
+int vetor[7];
 
 int main(){
-    printf("oiee aqui eh uma \nstring\n");
+    vetor[7] = 55;
+    int ameixa = 7;
+    printf("%d",ameixa);
+    printf("%d",vetor[7]);
+    
 
 
 return 0;
