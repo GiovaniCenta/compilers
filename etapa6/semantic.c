@@ -555,8 +555,9 @@ void check_numparam(AST *node)
     {
         if (functions_name[i] == node->son[0]->son[0]->symbol->text)
         {
-            if (nparam[i]  != count_numparam(node) - 1)
+            if (nparam[i]  != count_numparam(node))
             {
+                printf("\nnparam_decl:%d\tcount_num_call:%d\n",nparam[i],count_numparam(node));
                 printf("\n\nSEMANTIC ERROR! number of parameters of function declaration:%d and call:%d are different\n\n",nparam[i],count_numparam(node));
                 SemanticErrors++;
                 //exit(7);
@@ -739,6 +740,7 @@ int count_numparam(AST *node)
     }
     else if (node->type == AST_FUNCTION_CALL)
     {
+        int cont = 0;
 
         if (node->son[0]->son[2] == 0 && node->son[0]->son[1] == 0)
         {
@@ -753,7 +755,7 @@ int count_numparam(AST *node)
         else if (node->son[0]->son[2] != 0) //caso que tem parameters list
         {
 
-            cont++;
+            
 
             AST *aux;
             aux = node->son[0]->son[2];
