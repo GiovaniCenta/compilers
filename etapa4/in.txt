@@ -7,10 +7,9 @@ data {
 char: x = 'a';
 
 int:n=10;
-float:floatzinho = 12;
+
 int: pastel =  1;
-int[5]:pastelzinho;
-int[15..20]:rangezinho;
+
 
 
 
@@ -18,22 +17,17 @@ int[15..20]:rangezinho;
 }
 
 
-##chegar se ta chamando parametros em outra funçao
-##ver se é um parametro -> percorre a declaracao
-##ver se foi declarado depois do fim do bloco? ou se foi declarado depois de outra chamada de funcao
 
-
-int: pizza (int: xddd,int: aaaaa,int: bbbb,int: bbcccc,int: sdasdsa)
+int: pizza ()
   {
-if(xddd == 10){
-k = 10 + "adads";};
-xddd = 15 < 900;
+ n= 15;
+
 
   }
 
 int: main(){
-  n = pizza(8,5,'b',10,11);
-  n = aaaaa;
+  n = pizza();
+  
  
  
 }
