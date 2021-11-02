@@ -36,6 +36,12 @@ void generate_asm(TAC *first)
             asm_move(tac);
             break;
 
+
+        case TAC_FUNCTION_CALL:
+            if(tac->op1){
+            fprintf(fout,"\t call _%s \n",tac->op1->text);
+            }
+            break;
         case TAC_BEGINFUN:
             asm_beginfun(tac);
             break;
