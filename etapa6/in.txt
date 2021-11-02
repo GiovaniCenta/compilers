@@ -1,43 +1,12 @@
-## UFRGS - Compiladores - Marcelo Johann - 2021/1
-
-data {
-
-
-
-
-int[7]:vetor;
-int: ameixa = 7;
-
-
-
-
-
-
+data{
+int:ameixa=10;
 }
-
-
-
-
-int: main(){
-  vetor[5] = 55;
-  vetor[6] = 77;
-  ameixa = vetor[5] + vetor[6] + 90;
-  print(vetor[6]);
-
- 
- 
+int :main(){
+print(ameixa);
+print("\n");
+ameixa=pastel();
 }
-
-
-
-
-
-
-
-  
-
-
-
-  
-
-
+int:pastel(){
+    ameixa = ameixa + 10;
+    print(ameixa);
+}

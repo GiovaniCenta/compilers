@@ -230,7 +230,7 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_FUNCTION_CALL:
-        result = tac_join(code[0], tac_create(TAC_FUNCTION_CALL, make_temp(), node->symbol, 0));
+        result = tac_join(code[0], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0));
         break;
     case AST_PARAMETER:
         result = tac_join(tac_join(code[0], tac_create(TAC_PARAMETER, 0, code[0] ? code[0]->res : 0, 0)), code[1]);
