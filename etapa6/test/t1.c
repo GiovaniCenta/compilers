@@ -1,15 +1,21 @@
 #include <stdio.h>
 
 
-int vetor[7];
+
+int ameixa = 7;
+
+int pastel(int parametro1,int parametro2){
+    printf("%d",parametro1);
+    
+}
 
 int main(){
-    vetor[7] = 55;
-    int ameixa = 7;
-    printf("%d",ameixa);
-    printf("%d",vetor[7]);
+    ameixa = pastel(77,88);
+
     
 
 
 return 0;
 }
+
+

@@ -37,20 +37,54 @@ void generate_asm(TAC *first)
             break;
 
 
+        case TAC_PARAMETER_LIST:
+        break;
+        case TAC_PARAMETER:
+            if(tac->res)//caso em que é parameter call
+           { 
+               //movl	%esi,_p1(%rip)
+              fprintf(fout,"\t movl	%%esi,_%s(%%rip)\n",tac->res->text);
+               break;
+           }
+           else if(tac->op1){
+              // movl	$890,%esi
+
+              // movl	%esi,_p1(%rip)
+               fprintf(fout,"\t movl	$%s,%%esi\n",tac->op1->text);
+               break;
+
+           }
+           if((!tac->res) && (!tac->op1)){
+              
+               break;
+           }
+            
+            
+            break;
         case TAC_FUNCTION_CALL:
+            
             if(tac->op1){
             fprintf(fout,"\t call _%s \n",tac->op1->text);
+            
             }
+           
+            
             break;
         case TAC_BEGINFUN:
             asm_beginfun(tac);
             break;
 
         case TAC_ENDFUN:
+        
             asm_endfun();
+           
+            
             break;
         case TAC_PRINT:
+        
+            
             asm_print(tac);
+            
             break;
 
         case TAC_LABEL:

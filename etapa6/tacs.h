@@ -44,6 +44,7 @@
 #define TAC_MOVE_VECTOR 43
 #define TAC_MOVE 42
 #define TAC_DECL_VECTOR 44
+#define TAC_PARAMETER_LIST 46
 
 typedef struct tac_node{
     int type;

@@ -150,6 +150,11 @@ void print_asm(FILE *fout)
                 fprintf(fout, "_%s: \t.byte %s\n", node->text, node->text);
                 break;
 
+            case SYMBOL_PARAMETER:
+            
+            fprintf(fout, "_%s: .long\t0\n", node->text);
+                break;
+
             case SYMBOL_LIT_STRING:
             
 

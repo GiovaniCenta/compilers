@@ -1,3 +1,29 @@
+## UFRGS - Compiladores - Marcelo Johann - 2021/1
 data {
-char: ameixa = 'a';
+
+
+
+
+int: ameixa = 10;
+
+
+
+
+
+
+}
+
+int:pastelzinho(){
+  ameixa = ameixa + 25;
+  print(ameixa);
+}
+
+
+
+
+int: main(){
+  ameixa = pastelzinho();
+
+ 
+ 
 }

@@ -44,6 +44,10 @@ void tac_print(TAC *tac)
     case TAC_SYMBOL:
         fprintf(stderr, "TAC_SYMBOL");
         break;
+
+    //case TAC_RETURN:
+        //fprintf(stderr, "TAC_RETURN");
+       // break;
     case TAC_ADD:
         fprintf(stderr, "TAC_ADD");
         break;
@@ -109,6 +113,10 @@ void tac_print(TAC *tac)
         break;
     case TAC_PARAMETER:
         fprintf(stderr, "TAC_PARAMETER");
+        break;
+
+    case TAC_PARAMETER_LIST:
+        fprintf(stderr, "TAC_PARAMETER_LIST");
         break;
     case TAC_BEGINFUN:
         fprintf(stderr, "TAC_BEGINFUN");
@@ -186,6 +194,7 @@ TAC *generate_code(AST *node)
         code[i] = generate_code(node->son[i]);
 
     // PROCESS THIS NODE
+    
     switch (node->type)
     {
 
@@ -230,15 +239,38 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_FUNCTION_CALL:
-        result = tac_join(code[0], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0));
+     // node->son[1]->son[0]?node->son[1]->son[0]->symbol:0
+     
+        //result = tac_join(code[1],tac_join(tac_create(TAC_FUNCTION_CALL,code[0] ? code[0]->res : 0, 0,0),0));
+        result = tac_join(tac_join(code[1], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0)),code[0]);
         break;
+     
+     
+        
+    
+
+
     case AST_PARAMETER:
-        result = tac_join(tac_join(code[0], tac_create(TAC_PARAMETER, 0, code[0] ? code[0]->res : 0, 0)), code[1]);
+        //result = tac_join(code[0],tac_create(TAC_PARAMETER, 0, code[1] ? code[1]->res : 0, code[2] ? code[2]->res : 0));
+        //result = tac_join(code[0], tac_create(TAC_PARAMETER, code[1]?code[1]->res:0, node->son[0]->symbol, 0));
+        result = tac_join(tac_join(code[0], tac_create(TAC_PARAMETER, code[1] ? code[1]->res : 0, code[0] ? code[0]->res : 0, 0)), code[1]);
         break;
+ 
 
     case AST_FUNC:
-        result = tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0), code[1]),
+        
+
+
+        if (strcmp(node->son[0]->symbol->text,"main") != 0){   //CASO EM QUE A FUNCAO
+            result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0),code[1]),code[2]),
                           tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
+        break;
+        }
+        else{
+            result = tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0), code[1]),
+                          tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
+
+        }
         break;
 
     case AST_ATTR:
@@ -291,6 +323,7 @@ TAC *generate_code(AST *node)
         result = tac_join(code[0], tac_join(code[1], tac_join(code[2], code[3])));
         break;
     }
+    
 
     return result;
 }

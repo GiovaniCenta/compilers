@@ -18,48 +18,27 @@ main:
 
 
 ## TAC_BEGINFUN
-.globl	_main
-_main:
-	pushq	%rbp
-	movq	%rsp, %rbp
-
-## TAC_PRINT
-	movl	_ameixa(%rip), %esi
-	leaq	.printintstr(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_str0(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-	 call _pastel 
-## TAC_MOVE
-	movl	_mYWeeirT_emp4(%rip), %eax
-	movl	%eax, _ameixa(%rip)
-## TAC_ENDFUN
-	popq	%rbp
-	ret
-## TAC_BEGINFUN
 .globl	_pastel
 _pastel:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
-	movl	_ameixa(%rip), %edx
-	movl	_10(%rip), %eax
-	addl	%edx, %eax
-	movl	%eax, _mYWeeirT_emp5(%rip)
+	 movl	%esi,_p1(%rip)
+	 movl	%esi,_p2(%rip)
+## TAC_ENDFUN
+	popq	%rbp
+	ret
+## TAC_BEGINFUN
+.globl	_main
+_main:
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	 movl	$890,%esi
+	 call _pastel 
 ## TAC_MOVE
-	movl	_mYWeeirT_emp5(%rip), %eax
+	movl	_pastel(%rip), %eax
 	movl	%eax, _ameixa(%rip)
-## TAC_PRINT
-	movl	_ameixa(%rip), %esi
-	leaq	.printintstr(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
 ## TAC_ENDFUN
 	popq	%rbp
 	ret
@@ -70,9 +49,10 @@ _mYWeeirT_emp0: .long	0
 _mYWeeirT_emp1: .long	0
 _mYWeeirT_emp2: .long	0
 _mYWeeirT_emp3: .long	0
-_mYWeeirT_emp4: .long	0
 _10: .long	10
-_mYWeeirT_emp5: .long	0
+_890: .long	890
+_p1: .long	0
+_100: .long	100
 _ameixa: .long	0
-_str0: .string	"\n"
+_p2: .long	0
 .section .rodata

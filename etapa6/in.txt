@@ -1,12 +1,13 @@
 data{
 int:ameixa=10;
 }
-int :main(){
-print(ameixa);
-print("\n");
-ameixa=pastel();
-}
-int:pastel(){
-    ameixa = ameixa + 10;
+
+int:pastel(int:p1,int:p2){
+    ameixa = ameixa + p1 + p2;
     print(ameixa);
+    
 }
+int :main(){
+ameixa=pastel(890,100);
+}
+

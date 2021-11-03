@@ -94,7 +94,7 @@ program: data_decl { $$ = $1;  mainAST = $$;
                 check_operands($1);
                 check_commands($1);
                 
-                tac_print_backwards(generate_code($1));
+                
                  code = generate_code($1);
                 tac_print_backwards(code);
                         

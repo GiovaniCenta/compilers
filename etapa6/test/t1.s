@@ -1,13 +1,19 @@
 	.file	"t1.c"
 	.text
-	.comm	vetor,28,16
+	.globl	ameixa
+	.data
+	.align 4
+	.type	ameixa, @object
+	.size	ameixa, 4
+ameixa:
+	.long	7
 	.section	.rodata
 .LC0:
 	.string	"%d"
 	.text
-	.globl	main
-	.type	main, @function
-main:
+	.globl	pastel
+	.type	pastel, @function
+pastel:
 .LFB0:
 	.cfi_startproc
 	endbr64
@@ -17,24 +23,41 @@ main:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp
-	movl	$55, 28+vetor(%rip)
-	movl	$7, -4(%rbp)
+	movl	%edi, -4(%rbp)
+	movl	%esi, -8(%rbp)
 	movl	-4(%rbp), %eax
 	movl	%eax, %esi
 	leaq	.LC0(%rip), %rdi
 	movl	$0, %eax
 	call	printf@PLT
-	movl	28+vetor(%rip), %eax
-	movl	%eax, %esi
-	leaq	.LC0(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
+	nop
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE0:
+	.size	pastel, .-pastel
+	.globl	main
+	.type	main, @function
+main:
+.LFB1:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	$88, %esi
+	movl	$77, %edi
+	call	pastel
+	movl	%eax, ameixa(%rip)
+	movl	$0, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
 	.size	main, .-main
 	.ident	"GCC: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0"
 	.section	.note.GNU-stack,"",@progbits
