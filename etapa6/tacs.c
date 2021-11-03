@@ -261,7 +261,7 @@ TAC *generate_code(AST *node)
         
 
 
-        if (strcmp(node->son[0]->symbol->text,"main") != 0){   //CASO EM QUE A FUNCAO
+        if (strcmp(node->son[0]->symbol->text,"main") != 0){   //
             result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0),code[1]),code[2]),
                           tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
         break;
