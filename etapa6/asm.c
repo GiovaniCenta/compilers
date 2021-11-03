@@ -2,6 +2,12 @@
 #include "asm.h"
 #include <string.h>
 
+int cont_param_1 = 0;
+char *regsparameters[5] = {"esi","edi","edx","ecx","eax"};
+
+int cont_param_2 = 0;
+char *regsparameters_2[5] = {"esi","edi","edx","ecx","eax"};
+
 FILE *fout;
 int j = 0;
 void generate_asm(TAC *first)
@@ -43,14 +49,14 @@ void generate_asm(TAC *first)
             if(tac->res)//caso em que é parameter call
            { 
                //movl	%esi,_p1(%rip)
-              fprintf(fout,"\t movl	%%esi,_%s(%%rip)\n",tac->res->text);
+              fprintf(fout,"\t movl	%%%s,_%s(%%rip)\n",regsparameters[cont_param_1],tac->res->text);
+              ++cont_param_1;
                break;
            }
            else if(tac->op1){
               // movl	$890,%esi
-
-              // movl	%esi,_p1(%rip)
-               fprintf(fout,"\t movl	$%s,%%esi\n",tac->op1->text);
+               fprintf(fout,"\t movl	$%s,%%%s\n",tac->op1->text,regsparameters_2[cont_param_2]);
+               ++cont_param_2;
                break;
 
            }

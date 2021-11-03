@@ -9,7 +9,7 @@ ameixa:
 	.long	7
 	.section	.rodata
 .LC0:
-	.string	"%d"
+	.string	"%d %d %d %d"
 	.text
 	.globl	pastel
 	.type	pastel, @function
@@ -25,7 +25,13 @@ pastel:
 	subq	$16, %rsp
 	movl	%edi, -4(%rbp)
 	movl	%esi, -8(%rbp)
+	movl	%edx, -12(%rbp)
+	movl	%ecx, -16(%rbp)
+	movl	-16(%rbp), %esi
+	movl	-12(%rbp), %ecx
+	movl	-8(%rbp), %edx
 	movl	-4(%rbp), %eax
+	movl	%esi, %r8d
 	movl	%eax, %esi
 	leaq	.LC0(%rip), %rdi
 	movl	$0, %eax
@@ -48,6 +54,8 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
+	movl	$110, %ecx
+	movl	$99, %edx
 	movl	$88, %esi
 	movl	$77, %edi
 	call	pastel

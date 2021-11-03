@@ -242,7 +242,8 @@ TAC *generate_code(AST *node)
      // node->son[1]->son[0]?node->son[1]->son[0]->symbol:0
      
         //result = tac_join(code[1],tac_join(tac_create(TAC_FUNCTION_CALL,code[0] ? code[0]->res : 0, 0,0),0));
-        result = tac_join(tac_join(code[1], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0)),code[0]);
+        result = tac_join(tac_join(code[1],tac_join(code[2], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0))),code[0]);
+         
         break;
      
      
@@ -262,8 +263,8 @@ TAC *generate_code(AST *node)
 
 
         if (strcmp(node->son[0]->symbol->text,"main") != 0){   //
-            result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0),code[1]),code[2]),
-                          tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
+            result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0),code[1]),code[2]),tac_join(code[3],
+                          tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0)));
         break;
         }
         else{
