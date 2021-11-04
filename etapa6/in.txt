@@ -1,15 +1,23 @@
 data{
 int:ameixa=10;
+int:i=0;
 }
 
 int:pastel(int:p1,int:p2,int:p3,int:p4,int:p5){
     print(p3);
-    print("\n");
+    print(" \n ");
     ameixa = p1+p2+p3+p4+p5;
-    print(ameixa);
+    
+    return (7777);
     
 }
 int :main(){
-ameixa=pastel(100,200,300,400,500);
+until(i==10){
+    i = i + 1;
+    print(i);
+    
+};
+print(i);
+
 }
 

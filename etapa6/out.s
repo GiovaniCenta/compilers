@@ -11,6 +11,9 @@ main:
 ## TAC_MOVE
 	movl	_10(%rip), %eax
 	movl	%eax, _ameixa(%rip)
+## TAC_MOVE
+	movl	_0(%rip), %eax
+	movl	%eax, _i(%rip)
 	call	_main
 ## TAC_ENDFUN
 	popq	%rbp
@@ -58,12 +61,8 @@ _pastel:
 ## TAC_MOVE
 	movl	_mYWeeirT_emp3(%rip), %eax
 	movl	%eax, _ameixa(%rip)
-## TAC_PRINT
-	movl	_ameixa(%rip), %esi
-	leaq	.printintstr(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
+	##TAC_RET
+	movl	$7777, %eax
 ## TAC_ENDFUN
 	popq	%rbp
 	ret
@@ -73,15 +72,41 @@ _main:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
-	 movl	$100,%esi
-	 movl	$200,%edi
-	 movl	$300,%edx
-	 movl	$400,%ecx
-	 movl	$500,%eax
-	 call _pastel 
+
+.mYLabule_0:
+	movl	_i(%rip), %edx
+	movl	_10(%rip), %eax
+	cmpl	%eax, %edx
+	sete	%al
+	movzbl	%al, %eax
+	movl	%eax, _mYWeeirT_emp4(%rip)
+
+## TAC_IFZ
+	movl	_mYWeeirT_emp4(%rip), %eax
+	testl	%eax, %eax
+	jne		.mYLabule_1
+	movl	_i(%rip), %edx
+	movl	_1(%rip), %eax
+	addl	%edx, %eax
+	movl	%eax, _mYWeeirT_emp5(%rip)
 ## TAC_MOVE
-	movl	_pastel(%rip), %eax
-	movl	%eax, _ameixa(%rip)
+	movl	_mYWeeirT_emp5(%rip), %eax
+	movl	%eax, _i(%rip)
+## TAC_PRINT
+	movl	_i(%rip), %esi
+	leaq	.printintstr(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$0, %eax
+	jmp		.mYLabule_0
+
+.mYLabule_1:
+## TAC_PRINT
+	movl	_i(%rip), %esi
+	leaq	.printintstr(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$0, %eax
 ## TAC_ENDFUN
 	popq	%rbp
 	ret
@@ -89,22 +114,21 @@ _main:
 ## DATA SECTION
 .data
 _p5: .long	0
+_0: .long	0
+_1: .long	1
+_i: .long	0
+_7777: .long	7777
 _mYWeeirT_emp0: .long	0
 _mYWeeirT_emp1: .long	0
-_300: .long	300
 _mYWeeirT_emp2: .long	0
 _mYWeeirT_emp3: .long	0
 _mYWeeirT_emp4: .long	0
 _10: .long	10
 _mYWeeirT_emp5: .long	0
-_400: .long	400
 _p1: .long	0
-_100: .long	100
 _ameixa: .long	0
 _p2: .long	0
 _p3: .long	0
-_str0: .string	"\n"
-_500: .long	500
+_str0: .string	" \n "
 _p4: .long	0
-_200: .long	200
 .section .rodata

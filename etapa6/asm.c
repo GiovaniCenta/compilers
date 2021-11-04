@@ -1,6 +1,9 @@
 
 #include "asm.h"
 #include <string.h>
+#include "list.h"
+
+struct Node* functionNameList = NULL;
 
 int cont_param_1 = 0;
 char *regsparameters[5] = {"esi","edi","edx","ecx","eax"};
@@ -107,6 +110,14 @@ void generate_asm(TAC *first)
                     tac->op1->text, tac->res->text);
             break;
 
+        case TAC_IF:
+            fprintf(fout, "\n## TAC_IFZ\n"
+                          "\tmovl	_%s(%%rip), %%eax\n"
+                          "\ttestl	%%eax, %%eax\n"
+                          "\tjne\t\t.%s\n",
+                    tac->op1->text, tac->res->text);
+            break;
+
         case TAC_ADD:
             asm_aritm_operation_edx_eax(tac, "addl");
             break;
@@ -140,6 +151,10 @@ void generate_asm(TAC *first)
         case TAC_NOT:
             asm_not(tac);
             break;
+
+        case TAC_RET:
+        fprintf(fout,"\t##TAC_RET\n");
+        fprintf(fout,"\tmovl	$%s, %%eax\n",tac->op1->text);
         }
     }
 
@@ -157,7 +172,9 @@ void asm_beginfun(TAC *tac)
                   "_%s:\n"
                   "\tpushq	%%rbp\n"
                   "\tmovq	%%rsp, %%rbp\n\n",
+            
             tac->res->text, tac->res->text);
+   push(&functionNameList,tac->res->text); 
 }
 
 void asm_endfun()
@@ -227,6 +244,7 @@ TAC *asm_var_declar(TAC *first)
 void asm_move(TAC *tac)
 {
 
+    if(!search(functionNameList, tac->op1->text)){
     if (tac->op2)
     { //ITS A VECTOR
         
@@ -243,13 +261,18 @@ void asm_move(TAC *tac)
         tac->op1->text = tac->op2->text;
     }
 
-    else
+    else if(tac->op1->text)
     {
         fprintf(fout, "## TAC_MOVE\n");
         fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
                       "\tmovl\t%%eax, _%s(%%rip)\n",
                 tac->op1->text, tac->res->text);
     }
+    }
+    else{
+        return;
+    }
+
 }
 void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 {

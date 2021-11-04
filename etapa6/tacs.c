@@ -1,7 +1,10 @@
 #include "tacs.h"
 #include <string.h>
+#include "list.h"
 
 //GIOVANI DA SILVA ERE 2021
+
+
 
 TAC *create_tac_if(TAC *code0, TAC *code1);
 TAC *create_tac_if_else(TAC *code0, TAC *code1, TAC *code2);
@@ -90,6 +93,10 @@ void tac_print(TAC *tac)
     case TAC_IFZ:
         fprintf(stderr, "TAC_IFZ");
         break;
+
+    case TAC_IF:
+        fprintf(stderr, "TAC_IF");
+        break;
     case TAC_LABEL:
         fprintf(stderr, "TAC_LABEL");
         break;
@@ -136,6 +143,9 @@ void tac_print(TAC *tac)
     case TAC_DECL_VECTOR:
     fprintf(stderr, "TAC_DECL_VECTOR");
         break;
+
+    
+
 
     default:
         fprintf(stderr, "TAC_UNKNOWN");
@@ -218,6 +228,7 @@ TAC *generate_code(AST *node)
         result = tac_create(TAC_READ, node->symbol, 0, 0);
         break;
     case AST_RETURN:
+    
         result = tac_join(code[0], tac_create(TAC_RET, node->symbol, code[0] ? code[0]->res : 0, 0));
         break;
 
@@ -243,7 +254,7 @@ TAC *generate_code(AST *node)
      
         //result = tac_join(code[1],tac_join(tac_create(TAC_FUNCTION_CALL,code[0] ? code[0]->res : 0, 0,0),0));
         result = tac_join(tac_join(code[1],tac_join(code[2], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0))),code[0]);
-         
+        
         break;
      
      
@@ -394,7 +405,7 @@ TAC *create_tac_until(TAC *code0, TAC *code1)
     label_before_tac = tac_create(TAC_LABEL, label_before, 0, 0);
     tac_join(label_before_tac, code0);
 
-    jumpz = tac_create(TAC_IFZ, label_after, code0 ? code0->res : 0, 0);
+    jumpz = tac_create(TAC_IF, label_after, code0 ? code0->res : 0, 0);
     jumpz->prev = code0;
 
     jump = tac_create(TAC_JUMP, label_before, 0, 0);

@@ -46,6 +46,8 @@
 #define TAC_DECL_VECTOR 44
 #define TAC_PARAMETER_LIST 46
 
+#define TAC_IF 47
+
 typedef struct tac_node{
     int type;
     HASH_NODE* res;
