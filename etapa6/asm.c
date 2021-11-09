@@ -6,6 +6,8 @@
 struct Node *functionNameList = NULL;
 extern struct Node* head;
 
+char *vectors_names[100];
+int cont_vector = 0;
 
 int cont_param_1 = 0;
 char *regsparameters[5] = {"esi", "edi", "edx", "ecx", "eax"};
@@ -41,6 +43,10 @@ void generate_asm(TAC *first)
         {
             int valor = atoi(tac->op1->text);
             fprintf(fout, "\t.comm	%s,%d,16\n", tac->res->text, 4 * valor);
+            
+            vectors_names[cont_vector] = tac->res->text;
+            cont_vector++;
+            
             break;
         }
 
@@ -161,6 +167,7 @@ void generate_asm(TAC *first)
             break;
 
         case TAC_RET:
+         
             fprintf(fout, "\t##TAC_RET\n");
             fprintf(fout, "\tmovl	_%s(%%rip), %%eax\n", tac->op1->text);
         }
@@ -195,6 +202,9 @@ void asm_endfun()
 void asm_print(TAC *tac)
 {
 
+    
+    
+    
     if (tac->res->type == SYMBOL_LIT_STRING)
     {
         
@@ -216,6 +226,23 @@ void asm_print(TAC *tac)
     }
     else
     {
+        
+        //if(isVector(tac->res->text) == 1){
+            
+            if(tac->op1){
+            int valor = atoi(tac->op1->text);
+            fprintf(fout, "## TAC_PRINT_VECTOR\n"
+                      "\tmovl	%d+%s(%%rip), %%esi\n"
+                      "\tleaq	.printintstr(%%rip), %%rdi\n"
+                      "\tmovl	$0, %%eax\n"
+                      "\tcall	printf@PLT\n"
+                      "\tmovl	$0, %%eax\n",4*valor,tac->res->text);
+            }
+            else{
+               
+                //tac->res->text);
+
+       // }
         fprintf(fout, "## TAC_PRINT\n"
                       "\tmovl	_%s(%%rip), %%esi\n"
                       "\tleaq	.printintstr(%%rip), %%rdi\n"
@@ -223,8 +250,10 @@ void asm_print(TAC *tac)
                       "\tcall	printf@PLT\n"
                       "\tmovl	$0, %%eax\n",
                 tac->res->text);
+            }
+        }
     }
-}
+
 
 TAC *asm_var_declar(TAC *first)
 {
@@ -258,7 +287,7 @@ void asm_move(TAC *tac)
     if (!search(functionNameList, tac->op1->text))
     {
         if (tac->op2)
-        { //ITS A VECTOR
+        { //vector
 
             //int output;
             //sprintf(output, "4*%s",tac->op1->text);
@@ -270,7 +299,8 @@ void asm_move(TAC *tac)
                     4 * valor,
                     tac->res->text);
 
-            tac->op1->text = tac->op2->text;
+            
+            //tac->op1->text = tac->op2->text;
         }
 
         else if (tac->op1->text)
@@ -290,6 +320,10 @@ void asm_move(TAC *tac)
 void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 {
 
+    
+    
+    
+    
     if (search(functionNameList, tac->op2->text))
     {
 
@@ -367,4 +401,18 @@ void asm_not(TAC *tac)
                   "\tmovzb\t%%al, %%eax\n"
                   "\tmovl\t%%eax, _%s(%%rip)\n",
             tac->op1->text, tac->res->text);
+}
+
+
+int isVector(char *str){
+    
+    for(int i=0;i<100;i++){
+        if(strcmp(vectors_names[i],str)==0){
+            return 1;
+
+
+        }
+    }
+    return 0;
+
 }

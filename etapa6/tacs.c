@@ -245,9 +245,12 @@ TAC *generate_code(AST *node)
     case AST_UNTIL:
         result = create_tac_until(code[0], code[1]);
         break;
+    case AST_VEC_SYMBOL:
+     result = tac_create(TAC_DECL_VECTOR, node->son[0]->symbol,node->son[1]->symbol , 0);
 
     case AST_PRINT:
-        result = tac_join(tac_create(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0), code[1]);
+    
+        result = tac_join(code[0],tac_create(TAC_PRINT, code[0] ? code[0]->res : 0, code[1] ? code[1]->res : 0, 0));
         break;
 
     case AST_FUNCTION_CALL:
