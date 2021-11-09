@@ -4,11 +4,21 @@
 #include <stdio.h>
 #include <string.h>
 #include "list.h"
+#define STR_MAX 100;
 //GIOVANI DA SILVA ERE 2021
 
+struct Node *head = NULL;
+
+char *nome_strings[100];
+int strj = 1;
+
 HASH_NODE *Table[HASH_SIZE];
-char str[50] = "str";
-                char output[50];
+
+char *strings[100];
+int str_index = 0;
+
+char str[4] = "str";
+char output[50];
 void hashInit(void)
 {
     for (int i = 0; i < HASH_SIZE; i++)
@@ -50,8 +60,13 @@ HASH_NODE *hashInsert(char *text, int Lextype)
     HASH_NODE *newnode;
     int nodeAddress = hashAddress(text);
 
-    if ((newnode = hashFind(text)) != 0)
-        return newnode;
+    if (Lextype != SYMBOL_LIT_STRING)
+    {
+        if ((newnode = hashFind(text)) != 0)
+        {
+            return newnode;
+        }
+    }
 
     newnode = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
     newnode->type = Lextype;
@@ -114,11 +129,6 @@ HASH_NODE *make_label()
 void print_asm(FILE *fout)
 {
 
-    struct Node* head = NULL;
-
-    char *nome_strings[100];
-    int j = 0;
-
     fprintf(fout, "\n## DATA SECTION\n"
                   ".data\n");
 
@@ -127,51 +137,122 @@ void print_asm(FILE *fout)
     {
         for (node = Table[i]; node; node = node->next)
         {
-            if(!search(head, node->text))
+            if (!search(head, node->text))
             {
                 push(&head, node->text);
-            
 
-            switch (node->type)
-            {
-            case SYMBOL_VARIABLE:
-                fprintf(fout, "_%s: .long\t0\n", node->text);
-                break;
+                switch (node->type)
+                {
 
-            case SYMBOL_VECTOR:
-                fprintf(fout, "_%s: .zero\t400\n", node->text);
-                break;
+                case SYMBOL_FUNCTION:
+                    fprintf(fout, "_%s_Return: .long\t0\n", node->text);
+                    break;
+                case SYMBOL_VARIABLE:
+                    fprintf(fout, "_%s: .long\t0\n", node->text);
+                    break;
 
-            case SYMBOL_LIT_INT:
-                fprintf(fout, "_%s: .long\t%s\n", node->text, node->text);
-                break;
+                case SYMBOL_VECTOR:
+                    fprintf(fout, "_%s: .zero\t400\n", node->text);
+                    break;
 
-            case SYMBOL_LIT_CHAR: //CONVERTER PRA ASCII
-                fprintf(fout, "_%s: \t.byte %s\n", node->text, node->text);
-                break;
+                case SYMBOL_LIT_INT:
+                    fprintf(fout, "_%s: .long\t%s\n", node->text, node->text);
+                    break;
 
-            case SYMBOL_PARAMETER:
-            
-            fprintf(fout, "_%s: .long\t0\n", node->text);
-                break;
+                case SYMBOL_LIT_CHAR: //CONVERTER PRA ASCII
+                    fprintf(fout, "_%s: \t.byte %s\n", node->text, node->text);
+                    break;
 
-            case SYMBOL_LIT_STRING:
-            
+                case SYMBOL_PARAMETER:
+
+                    fprintf(fout, "_%s: .long\t0\n", node->text);
+                    break;
+
+                case SYMBOL_LIT_STRING:
+                    printf("\n");
+                    char out[50];
+                    stpcpy(out,node->text);
+                    str_treatment(node->text);
+                    if(string_already(node->text) == 0){
+                    strings[str_index] = node->text;
+                    str_index++;
+                    fprintf(fout, "_%s: .string\t%s\n", node->text, out);
+                    }
+                    break;
 
                 
-                sprintf(output, "%s%d", str, j);
-                fprintf(fout, "_%s: .string\t%s\n", output, node->text);
-                
-                j++;
-                break;
-            
-            default:
-                break;
+                default:
+                    break;
+                }
             }
-
-        }
         }
     }
+    //rintList(head);
 
     fprintf(fout, ".section .rodata\n");
 }
+
+int string_already(char *str)
+{
+    int i;
+    for (i = 0; i < 100; i++)
+    {
+        if (strings[i])
+        {
+            if (strcmp(strings[i], str) == 0)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+ void str_treatment(char* str_in){
+                    char *string1;
+                    string1 = malloc(sizeof(str_in)); 
+                    strcpy(string1, str_in);
+
+                    //printf("\nstring antes da remocao de espaco: %s\n", string1);
+
+                   //remover espaços   oook
+                    char *str = str_in;
+
+                    char *write = str, *read = str;
+                    do
+                    {
+                        if (*read != ' ')
+                            *write++ = *read;
+                    } while (*read++);
+                    //printf("\nstring dps da remocao de espaco: %s\n", str);
+                   
+
+                    
+
+                    //trocar /n por barra n
+
+                char *str1 = str_in;
+
+                    char *write1 = str1, *read1 = str1;
+                    do
+                    {
+                        if (*read1 != '\\')
+                            *write1++ = *read1;
+                    } while (*read1++);
+                    //printf("\nstring dps da remocao de barra: %s\n", str1);
+
+
+                char *str2 = str_in;
+
+                    char *write2 = str2, *read2 = str2;
+                    do
+                    {
+                        if (*read2 != '\"')
+                            *write2++ = *read2;
+                    } while (*read2++);
+                    //printf("\nstring dps da remocao de aspas: %s\n", str2);
+
+                return str2;
+                    }
+

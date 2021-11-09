@@ -34,7 +34,7 @@ decompilationOutputFile = fopen(argv[2], "w");
   
   yyparse();
 
-   int semanticErrors = get_semantic_errors();
+  int semanticErrors = get_semantic_errors();
   if (semanticErrors > 0){
       fprintf(stderr, "ERROR! There are : %d  Semantic Errors! \n", semanticErrors);
       exit(4);

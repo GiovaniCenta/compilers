@@ -35,3 +35,10 @@ bool search(struct Node* head, int x)
 	return false;
 }
 
+void printList(struct Node* n)
+{
+    while (n != NULL) {
+        printf(" %d ", n->key);
+        n = n->next;
+    }
+}

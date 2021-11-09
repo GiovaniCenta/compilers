@@ -4,11 +4,9 @@ data {
 
 
 
-char: x = 'a';
 
 int:n=10;
 
-int: pastel =  1;
 
 
 
@@ -20,7 +18,7 @@ int: pastel =  1;
 
 int: pizza ()
   {
- n= 15;
+ n= 15 & 18;
 
 
   }

@@ -1,23 +1,30 @@
 data{
 int:ameixa=10;
+int:xuxu=10;
 int:i=0;
 }
 
 int:pastel(int:p1,int:p2,int:p3,int:p4,int:p5){
-    print(p3);
-    print(" \n ");
-    ameixa = p1+p2+p3+p4+p5;
+    p1 = 5 + p2;
+    return (p1);
+
     
-    return (7777);
     
 }
 int :main(){
-until(i==10){
-    i = i + 1;
-    print(i);
-    
-};
-print(i);
+print("oie string com espaço");
+print("\n");
+print("oie2");
+print("\n");
+print("\n");
+print("\n");
+print(xuxu);
+print("\n");
+print("depois");
+print("\n");
+
+
+
 
 }
 

@@ -61,6 +61,15 @@ void decompileVarDec(AST* node){
     fprintf(decompilationFile, ";\n");
     return;
 }
+
+void decompileListList(AST* node){
+    fprintf(decompilationFile, " ");
+    fprintf(decompilationFile, node->son[0]->symbol->text);
+    
+    if (node->son[1]!=0)
+        decompileListList(node->son[1]);
+}
+
 void decompileVarDec_vector(AST* node){
     
     
@@ -89,13 +98,6 @@ void decompileVarDec_vector(AST* node){
 }
 
 
-void decompileListList(AST* node){
-    fprintf(decompilationFile, " ");
-    fprintf(decompilationFile, node->son[0]->symbol->text);
-    
-    if (node->son[1]!=0)
-        decompileListList(node->son[1]);
-}
 
 void decompileVarDec_vector_range(AST* node){
 
@@ -133,6 +135,19 @@ void decompileFunctionList(AST* node){
 
 }
 
+void decompileParameter(AST *node){
+   if (node->son[0] != 0){
+    
+    
+    get_Type(node->son[0]->type, kwType);
+    fprintf(decompilationFile, kwType);
+    fprintf(decompilationFile, " : ");
+    fprintf(decompilationFile, node->son[1]->symbol->text);
+    }
+
+}
+
+
 void decompileparameterList(AST* node){
 
     /*parameterslist:
@@ -153,18 +168,26 @@ void decompileparameterList(AST* node){
     }
 }
 
-
-void decompileParameter(AST *node){
-   if (node->son[0] != 0){
+void decompilationBlock(AST* node){
     
-    
-    get_Type(node->son[0]->type, kwType);
-    fprintf(decompilationFile, kwType);
-    fprintf(decompilationFile, " : ");
-    fprintf(decompilationFile, node->son[1]->symbol->text);
+    if (node->son[0]!=0){
+    fprintf(decompilationFile, "\n{");
+    switchDecompilation(node->son[0]);
+    fprintf(decompilationFile, "\n}");
     }
+    else
+{
+    fprintf(decompilationFile, "\n{");
+    fprintf(decompilationFile, "}");
+}
+
+
+
 
 }
+
+
+
 
 
 
@@ -204,67 +227,6 @@ void decompileFunction(AST* node){
 }
 
 
-void decompilationBlock(AST* node){
-    
-    if (node->son[0]!=0){
-    fprintf(decompilationFile, "\n{");
-    switchDecompilation(node->son[0]);
-    fprintf(decompilationFile, "\n}");
-    }
-    else
-{
-    fprintf(decompilationFile, "\n{");
-    fprintf(decompilationFile, "}");
-}
-
-
-
-
-}
-
-void decompileCMDLIST(AST* node){
-    if(node->son[0]!=0){
-    fprintf(decompilationFile, "\n");
-    decompileSwitchCMD(node->son[0]);
-    fprintf(decompilationFile, " ;");
-   
-    if(node->son[1]!=0)
-        decompileCMDLIST(node->son[1]);
-    }
-    
-}
-
-void decompileSwitchCMD(AST* node){
-    // printf("\n\nCHEGOU AQUI no switch CMD");
-    //exit(201);
-    fprintf(decompilationFile,"    ");
-    switch(node->type){
-        case AST_ATTR: decompileAttr(node);break;
-        case AST_VEC_ATTR:decompileVecAttr(node);break;
-        case AST_PRINT:decompilePrint(node);break;
-        case AST_RETURN:decompileReturn(node);break;
-        case AST_FLOW_CONTROL:decompileFlowControl(node);break;
-        case AST_BLOCK:decompilationBlock(node);break;
-        case AST_COMEFROM:decompilationComeFrom(node);break;
-        case AST_IDENLIT:decompileIdenLit(node);break;
-        case AST_IDEN:decompileIden(node);break;
-
-
-
-
-        default:printf("\n\ndecompilation error, cmd not found...exiting\n\n");exit(5);break;
-    }
-    }
-void decompilePrint(AST* node){
-    
-    fprintf(decompilationFile, "print ");
-    //decompileSwitchExpr(node->son[0]);
-    //astPrint(node->son[0],0);
-    //decompileSwitchExpr(node->son[0]);
-    decompileExprList(node->son[0]);
-    //exit(5);
-}
-
 
 void decompileExprList(AST *node){
     if (node->son[0]!=0){
@@ -277,6 +239,18 @@ void decompileExprList(AST *node){
     }
 }
 }
+
+void decompilePrint(AST* node){
+    
+    fprintf(decompilationFile, "print ");
+    //decompileSwitchExpr(node->son[0]);
+    //astPrint(node->son[0],0);
+    //decompileSwitchExpr(node->son[0]);
+    decompileExprList(node->son[0]);
+    //exit(5);
+}
+
+
 void decompileReturn(AST* node){
     
     fprintf(decompilationFile, "return ");
@@ -356,41 +330,6 @@ void decompileSymbol(AST *node){
     fprintf(decompilationFile,node->symbol->text);  //caso "string"
     }
 
-void decompileSwitchExpr(AST *node){
-    switch(node->type){
-        case AST_SYMBOL: 
-        case AST_SYMBOL_INT:
-        case AST_SYMBOL_CHAR:
-        case AST_SYMBOL_STRING:
-        decompileSymbol(node);break;
-        case AST_VEC_SYMBOL:decompileVecSymbol(node);break;
-        case AST_ADD:decompileMathExprSwitch(node);break;
-        case AST_SUB:decompileMathExprSwitch(node);break;
-        case AST_MUL:decompileMathExprSwitch(node);break;
-        case AST_DIV:decompileMathExprSwitch(node);break;
-        case AST_LES:decompileMathExprSwitch(node);break;
-        case AST_GRE:decompileMathExprSwitch(node);break;
-        case AST_OR:decompileMathExprSwitch(node);break;
-        case AST_AND:decompileMathExprSwitch(node);break;
-        case AST_NOT:decompileNotExpr(node);break;
-        case AST_LE:decompileMathExprSwitch(node);break;
-        case AST_GE:decompileMathExprSwitch(node);break;
-        case AST_EQ:decompileMathExprSwitch(node);break;
-        case AST_DIF:decompileMathExprSwitch(node);break;
-        case AST_READ:fprintf(decompilationFile,"read");break;
-        case AST_FUNCTION_CALL:decompileFunctionCall(node);break;
-        case AST_IDENLIT :decompileIdenLit(node);break;
-        case AST_IDEN :decompileIden(node);break;
-        case AST_PARENTHESIS :decompileParenthesis(node);break;
-        
-
-
-
-
-        default:printf("\n\ndecompilation error, expression not found...exiting\n\n");exit(5);break;
-    }
-
-}
 
 
 void decompileIden(AST *node){
@@ -459,7 +398,41 @@ decompileFunctionCall(AST *node)
 
 }
 
-functioncallparameterlist(AST *node){
+
+void decompileSwitchExpr(AST *node){
+    switch(node->type){
+        case AST_SYMBOL: decompileSymbol(node);break;
+        case AST_VEC_SYMBOL:decompileVecSymbol(node);break;
+        case AST_ADD:decompileMathExprSwitch(node);break;
+        case AST_SUB:decompileMathExprSwitch(node);break;
+        case AST_MUL:decompileMathExprSwitch(node);break;
+        case AST_DIV:decompileMathExprSwitch(node);break;
+        case AST_LES:decompileMathExprSwitch(node);break;
+        case AST_GRE:decompileMathExprSwitch(node);break;
+        case AST_OR:decompileMathExprSwitch(node);break;
+        case AST_AND:decompileMathExprSwitch(node);break;
+        case AST_NOT:decompileNotExpr(node);break;
+        case AST_LE:decompileMathExprSwitch(node);break;
+        case AST_GE:decompileMathExprSwitch(node);break;
+        case AST_EQ:decompileMathExprSwitch(node);break;
+        case AST_DIF:decompileMathExprSwitch(node);break;
+        case AST_READ:fprintf(decompilationFile,"read");break;
+        case AST_FUNCTION_CALL:decompileFunctionCall(node);break;
+        case AST_IDENLIT :decompileIdenLit(node);break;
+        case AST_IDEN :decompileIden(node);break;
+        case AST_PARENTHESIS :decompileParenthesis(node);break;
+        
+
+
+
+
+        default:printf("\n\ndecompilation error, expression not found...exiting\n\n");exit(5);break;
+    }
+
+}
+
+
+void functioncallparameterlist(AST *node){
     
     
     fprintf(decompilationFile, ", ");
@@ -516,6 +489,39 @@ void switchDecompilation(AST* node){
 }
 
 
+
+
+void decompileIF(AST *node){
+    fprintf(decompilationFile,"if (");
+    //printf("\n\n = = == = = = = = = = = =\n\n\n");
+    astPrint(node->son[1],0);
+    decompileSwitchExpr(node->son[0]);
+    fprintf(decompilationFile," ) ");
+    fprintf(decompilationFile,"\n");
+    decompileSwitchCMD(node->son[1]);
+    }
+
+void decompileIFElse(AST *node){
+    fprintf(decompilationFile,"if (");
+    //printf("\n\n = = == = = = = = = = = =\n\n\n");
+    astPrint(node->son[1],0);
+    decompileSwitchExpr(node->son[0]);
+    fprintf(decompilationFile,") ");
+    decompileSwitchCMD(node->son[1]);
+    fprintf(decompilationFile,"\n    else\n");
+    decompileSwitchCMD(node->son[2]);
+    }
+
+void decompileUntil(AST *node){
+    fprintf(decompilationFile,"until (");
+    //printf("\n\n = = == = = = = = = = = =\n\n\n");
+    astPrint(node->son[1],0);
+    decompileSwitchExpr(node->son[0]);
+    fprintf(decompilationFile," ) ");
+    fprintf(decompilationFile,"\n");
+    decompileSwitchCMD(node->son[1]);
+}
+
 void decompileFlowControl(AST *node){
     
     switch(node->son[0]->type){
@@ -527,38 +533,6 @@ void decompileFlowControl(AST *node){
 
 }
 
-void decompileIF(AST *node){
-    fprintf(decompilationFile,"if (");
-    //printf("\n\n = = == = = = = = = = = =\n\n\n");
-    //astPrint(node->son[1],0);
-    decompileSwitchExpr(node->son[0]);
-    fprintf(decompilationFile," ) ");
-    fprintf(decompilationFile,"\n");
-    decompileSwitchCMD(node->son[1]);
-    }
-
-void decompileIFElse(AST *node){
-    fprintf(decompilationFile,"if (");
-    //printf("\n\n = = == = = = = = = = = =\n\n\n");
-    //astPrint(node->son[1],0);
-    decompileSwitchExpr(node->son[0]);
-    fprintf(decompilationFile,") ");
-    decompileSwitchCMD(node->son[1]);
-    fprintf(decompilationFile,"\n    else\n");
-    decompileSwitchCMD(node->son[2]);
-    }
-
-void decompileUntil(AST *node){
-    fprintf(decompilationFile,"until (");
-    //printf("\n\n = = == = = = = = = = = =\n\n\n");
-    //astPrint(node->son[1],0);
-    decompileSwitchExpr(node->son[0]);
-    fprintf(decompilationFile," ) ");
-    fprintf(decompilationFile,"\n");
-    decompileSwitchCMD(node->son[1]);
-}
-
-
 void decompilationComeFrom(AST *node){
 
     //|KW_COMEFROM ':' expression       { $$ = astCreate(AST_COMEFROM,0,$3,0,0,0); }
@@ -567,6 +541,43 @@ void decompilationComeFrom(AST *node){
 }
 
 
+void decompileSwitchCMD(AST* node){
+    // printf("\n\nCHEGOU AQUI no switch CMD");
+    //exit(201);
+    fprintf(decompilationFile,"    ");
+    switch(node->type){
+        case AST_ATTR: decompileAttr(node);break;
+        case AST_VEC_ATTR:decompileVecAttr(node);break;
+        case AST_PRINT:decompilePrint(node);break;
+        case AST_RETURN:decompileReturn(node);break;
+        case AST_FLOW_CONTROL:decompileFlowControl(node);break;
+        case AST_BLOCK:decompilationBlock(node);break;
+        case AST_COMEFROM:decompilationComeFrom(node);break;
+        case AST_IDENLIT:decompileIdenLit(node);break;
+        case AST_IDEN:decompileIden(node);break;
+
+
+
+
+        default:printf("\n\ndecompilation error, cmd not found...exiting\n\n");exit(5);break;
+    }
+    }
+
+void decompileCMDLIST(AST* node){
+    if(node->son[0]!=0){
+    fprintf(decompilationFile, "\n");
+    decompileSwitchCMD(node->son[0]);
+    fprintf(decompilationFile, " ;");
+   
+    if(node->son[1]!=0)
+        decompileCMDLIST(node->son[1]);
+    }
+    if(node->son[0]==0){
+        fprintf(decompilationFile, " ;");
+
+    }
+    
+}
 
 
 

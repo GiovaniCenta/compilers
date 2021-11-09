@@ -9,3 +9,4 @@ struct Node
 
 void push(struct Node** head_ref, int new_key);
 bool search(struct Node* head, int x);
+void printList(struct Node* n);

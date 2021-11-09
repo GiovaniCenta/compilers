@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "ast.h": "c",
-        "hash.h": "c"
+        "hash.h": "c",
+        "string.h": "c"
     }
 }

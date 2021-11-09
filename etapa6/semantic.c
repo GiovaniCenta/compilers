@@ -290,6 +290,8 @@ void check_operands(AST *node)
     case AST_SUB:
     case AST_DIV:
     case AST_MUL:
+    case AST_OR:
+    case AST_AND:
     {
         if (!is_number(node->son[0]))
         {
@@ -357,6 +359,7 @@ void check_range_vector(AST *node)
 
 int is_number(AST *node)
 {
+    
 
     if (node->type == AST_GRE || node->type == AST_EQ || node->type == AST_LES || node->type == AST_GE || node->type == AST_NOT || node->type == AST_LE)
     {
@@ -369,7 +372,7 @@ int is_number(AST *node)
 
     else if (node->type == AST_SYMBOL_CHAR)
         return 0;
-
+    
     else if (node->type == AST_IDEN)
     {
         if (node->son[0]->symbol->datatype != DATATYPE_CHAR && node->son[0]->symbol->datatype != DATATYPE_INT)
@@ -396,9 +399,11 @@ int is_number(AST *node)
         return 1;
     }
 
-    else if (node->type == AST_ADD || node->type == AST_SUB ||
+    else if (node->type == AST_ADD || node->type == AST_SUB || node->type == AST_AND || node->type == AST_OR||
              node->type == AST_DIV || node->type == AST_ADD || node->type == AST_MUL || node->type == AST_PARENTHESIS)
     {
+        
+        
         if (node->son[0])
         {
             //is_number(node->son[0]);
@@ -968,6 +973,7 @@ void check_dec_var_nature(AST *node)
 
 void check_commands(AST *node)
 {
+    
 
     int i;
     if (node == 0) //||node->son[0]==0 || node->son[0]->son[0]==0 || node->son[0]->son[0]->son[0]  )
@@ -980,6 +986,8 @@ void check_commands(AST *node)
     case (AST_ATTR):
 
     {
+        
+        
         
        
         
@@ -996,15 +1004,19 @@ void check_commands(AST *node)
 
         else
         {
+            
 
             for (int i = 1; i < MAX_SONS; i++)
             {
                 
+                
                 if (node->son[i])
                 {
                     
+                    
                     if (!is_number(node->son[i]))
                     {
+                        
                         
                         printf("\nSemantic Error! ATTRIBUTE WITH INCORRET OPERAND!\n");
                         SemanticErrors++;
@@ -1050,8 +1062,9 @@ void check_commands(AST *node)
         if (node->son[0]->symbol->datatype == DATATYPE_INT || node->son[0]->symbol->datatype == DATATYPE_CHAR)
         {
 
-            if (node->son[2]->type == AST_ADD || node->son[2]->type == AST_SUB || node->son[2]->type == AST_MUL || node->son[2]->type == AST_DIV || node->son[2]->type == AST_VEC_SYMBOL || node->son[2]->type == AST_FUNCTION_CALL)
+            if (node->son[2]->type == AST_ADD || node->son[2]->type == AST_SUB || node->son[2]->type == AST_MUL || node->son[2]->type == AST_DIV || node->son[2]->type == AST_AND || node->son[2]->type == AST_OR || node->son[2]->type == AST_VEC_SYMBOL || node->son[2]->type == AST_FUNCTION_CALL)
             {
+                
                 check_operands(node);
             }
 

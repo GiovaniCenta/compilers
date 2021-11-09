@@ -217,6 +217,7 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_ADD ... AST_OR:
+    
         result = create_tac_op(node->type, code[0], code[1]);
         break;
 

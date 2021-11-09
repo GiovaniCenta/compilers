@@ -38,3 +38,4 @@ void decompileParenthesis(AST *node);
 
 void switchDecompilation(AST* node);
 void decompile(FILE* outFile, AST* node);
+void functioncallparameterlist(AST *node);

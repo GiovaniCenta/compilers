@@ -1,16 +1,24 @@
 	.file	"t1.c"
 	.text
-	.globl	ameixa
+	.globl	x
 	.data
 	.align 4
-	.type	ameixa, @object
-	.size	ameixa, 4
-ameixa:
-	.long	7
+	.type	x, @object
+	.size	x, 4
+x:
+	.long	330
+	.section	.rodata
+
+.printstring: .string "%s"
+
+.LC1:
+	.string	"oi2"
+.LC2:
+	.string	"%d"
 	.text
-	.globl	pastel
-	.type	pastel, @function
-pastel:
+	.globl	main
+	.type	main, @function
+main:
 .LFB0:
 	.cfi_startproc
 	endbr64
@@ -19,40 +27,28 @@ pastel:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movl	%edi, -4(%rbp)
-	movl	%esi, -8(%rbp)
-	movl	%edx, -12(%rbp)
-	movl	%ecx, -16(%rbp)
-	movl	-4(%rbp), %eax
-	popq	%rbp
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
-.LFE0:
-	.size	pastel, .-pastel
-	.globl	main
-	.type	main, @function
-main:
-.LFB1:
-	.cfi_startproc
-	endbr64
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movl	$110, %ecx
-	movl	$99, %edx
-	movl	$88, %esi
-	movl	$77, %edi
-	call	pastel
-	movl	%eax, ameixa(%rip)
+	movl	$10, %edi
+	call	putchar@PLT
+	movl	$"oie", %esi
+	leaq	.printstring(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	leaq	.LC1(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$10, %edi
+	call	putchar@PLT
+	movl	x(%rip), %eax
+	movl	%eax, %esi
+	leaq	.LC2(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
 	movl	$0, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE1:
+.LFE0:
 	.size	main, .-main
 	.ident	"GCC: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0"
 	.section	.note.GNU-stack,"",@progbits

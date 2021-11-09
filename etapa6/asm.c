@@ -3,21 +3,24 @@
 #include <string.h>
 #include "list.h"
 
-struct Node* functionNameList = NULL;
+struct Node *functionNameList = NULL;
+extern struct Node* head;
+
 
 int cont_param_1 = 0;
-char *regsparameters[5] = {"esi","edi","edx","ecx","eax"};
+char *regsparameters[5] = {"esi", "edi", "edx", "ecx", "eax"};
 
 int cont_param_2 = 0;
-char *regsparameters_2[5] = {"esi","edi","edx","ecx","eax"};
+char *regsparameters_2[5] = {"esi", "edi", "edx", "ecx", "eax"};
 
 FILE *fout;
-int j = 0;
+int m = 1;
 void generate_asm(TAC *first)
 {
 
     //TAC *tac;
     fout = fopen("out.s", "w");
+    
     //init
     fprintf(fout, ".printintstr: .string \"%%d\"\n"
                   ".printfloatstr: .string \"%%f\"\n"
@@ -37,7 +40,7 @@ void generate_asm(TAC *first)
         case TAC_DECL_VECTOR:
         {
             int valor = atoi(tac->op1->text);
-            fprintf(fout, "\t.comm	%s,%d,16\n",tac->res->text,4*valor);
+            fprintf(fout, "\t.comm	%s,%d,16\n", tac->res->text, 4 * valor);
             break;
         }
 
@@ -45,55 +48,52 @@ void generate_asm(TAC *first)
             asm_move(tac);
             break;
 
-
         case TAC_PARAMETER_LIST:
-        break;
+            break;
         case TAC_PARAMETER:
-            if(tac->res)//caso em que é parameter call
-           { 
-               //movl	%esi,_p1(%rip)
-              fprintf(fout,"\t movl	%%%s,_%s(%%rip)\n",regsparameters[cont_param_1],tac->res->text);
-              ++cont_param_1;
-               break;
-           }
-           else if(tac->op1){
-              // movl	$890,%esi
-               fprintf(fout,"\t movl	$%s,%%%s\n",tac->op1->text,regsparameters_2[cont_param_2]);
-               ++cont_param_2;
-               break;
+            if (tac->res) //caso em que é parameter call
+            {
+                //movl	%esi,_p1(%rip)
+                fprintf(fout, "\t movl	%%%s,_%s(%%rip)\n", regsparameters[cont_param_1], tac->res->text);
+                ++cont_param_1;
+                break;
+            }
+            else if (tac->op1)
+            {
+                // movl	$890,%esi
+                fprintf(fout, "\t movl	$%s,%%%s\n", tac->op1->text, regsparameters_2[cont_param_2]);
+                ++cont_param_2;
+                break;
+            }
+            if ((!tac->res) && (!tac->op1))
+            {
 
-           }
-           if((!tac->res) && (!tac->op1)){
-              
-               break;
-           }
-            
-            
+                break;
+            }
+
             break;
         case TAC_FUNCTION_CALL:
-            
-            if(tac->op1){
-            fprintf(fout,"\t call _%s \n",tac->op1->text);
-            
+
+            if (tac->op1)
+            {
+                fprintf(fout, "\t call _%s \n", tac->op1->text);
+                fprintf(fout, "\tmovl	%%eax,_%s_Return(%%rip)\n", tac->op1->text);
             }
-           
-            
+
             break;
         case TAC_BEGINFUN:
             asm_beginfun(tac);
             break;
 
         case TAC_ENDFUN:
-        
+
             asm_endfun();
-           
-            
+
             break;
         case TAC_PRINT:
-        
-            
+
             asm_print(tac);
-            
+
             break;
 
         case TAC_LABEL:
@@ -124,6 +124,14 @@ void generate_asm(TAC *first)
         case TAC_SUB:
             asm_aritm_operation_edx_eax(tac, "subl");
             break;
+
+        case TAC_OR:
+            asm_aritm_operation_edx_eax(tac, "orl");
+            break;
+
+        case TAC_AND:
+            asm_aritm_operation_edx_eax(tac, "andl");
+            break;
         case TAC_MUL:
             asm_aritm_operation_edx_eax(tac, "imull");
             break;
@@ -153,13 +161,13 @@ void generate_asm(TAC *first)
             break;
 
         case TAC_RET:
-        fprintf(fout,"\t##TAC_RET\n");
-        fprintf(fout,"\tmovl	$%s, %%eax\n",tac->op1->text);
+            fprintf(fout, "\t##TAC_RET\n");
+            fprintf(fout, "\tmovl	_%s(%%rip), %%eax\n", tac->op1->text);
         }
     }
 
-    //hash table
-    print_asm(fout);
+    print_asm(fout);//hash table
+    
 
     fclose(fout);
 }
@@ -172,9 +180,9 @@ void asm_beginfun(TAC *tac)
                   "_%s:\n"
                   "\tpushq	%%rbp\n"
                   "\tmovq	%%rsp, %%rbp\n\n",
-            
+
             tac->res->text, tac->res->text);
-   push(&functionNameList,tac->res->text); 
+    push(&functionNameList, tac->res->text);
 }
 
 void asm_endfun()
@@ -189,17 +197,22 @@ void asm_print(TAC *tac)
 
     if (tac->res->type == SYMBOL_LIT_STRING)
     {
+        
+                        
 
         char str[50] = "str";
         char output[50];
-        sprintf(output, "%s%d", str, j);
-        j++;
-        fprintf(fout, "## TAC_PRINT_STRING\n");
-        fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
-                      "\tmovl	$0, %%eax\n"
-                      "\tcall	printf@PLT\n"
-                      "\tmovl	$0, %%eax\n",
-                output);
+        strcpy(output,tac->res->text);
+        str_treatment(output);
+        
+      
+            fprintf(fout, "## TAC_PRINT_STRING\n");
+            fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
+                          "\tmovl	$0, %%eax\n"
+                          "\tcall	printf@PLT\n"
+                          "\tmovl	$0, %%eax\n",
+                    output);
+            m++;
     }
     else
     {
@@ -226,8 +239,6 @@ TAC *asm_var_declar(TAC *first)
     while (tac->type == TAC_MOVE)
     {
 
-       
-
         if (tac)
         {
             asm_move(tac);
@@ -244,54 +255,85 @@ TAC *asm_var_declar(TAC *first)
 void asm_move(TAC *tac)
 {
 
-    if(!search(functionNameList, tac->op1->text)){
-    if (tac->op2)
-    { //ITS A VECTOR
-        
-        //int output;
-        //sprintf(output, "4*%s",tac->op1->text);
-        int valor = atoi(tac->op1->text);
-        fprintf(fout, "## TAC_MOVE_VECTOR\n"
-                    "\tmovl	$%s, %d+%s(%%rip)\n"
-                      "\tmovl	$0, %%eax\n",
-                tac->op2->text,
-                4*valor,
-                tac->res->text);
-
-        tac->op1->text = tac->op2->text;
-    }
-
-    else if(tac->op1->text)
+    if (!search(functionNameList, tac->op1->text))
     {
-        fprintf(fout, "## TAC_MOVE\n");
-        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                      "\tmovl\t%%eax, _%s(%%rip)\n",
-                tac->op1->text, tac->res->text);
-    }
-    }
-    else{
-        return;
-    }
+        if (tac->op2)
+        { //ITS A VECTOR
 
+            //int output;
+            //sprintf(output, "4*%s",tac->op1->text);
+            int valor = atoi(tac->op1->text);
+            fprintf(fout, "## TAC_MOVE_VECTOR\n"
+                          "\tmovl	$%s, %d+%s(%%rip)\n"
+                          "\tmovl	$0, %%eax\n",
+                    tac->op2->text,
+                    4 * valor,
+                    tac->res->text);
+
+            tac->op1->text = tac->op2->text;
+        }
+
+        else if (tac->op1->text)
+        {
+            fprintf(fout, "## TAC_MOVE\n");
+            fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",
+                    tac->op1->text, tac->res->text);
+        }
+    }
+    else
+    {
+        fprintf(fout, "## TAC_FUNCTION_CALL\n");
+        fprintf(fout, "\tmovl	%%eax, _%s(%%rip)\n", tac->res->text);
+    }
 }
 void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 {
-    fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
-                  "\tmovl\t_%s(%%rip), %%eax\n"
-                  "\t%s\t%%edx, %%eax\n"
-                  "\tmovl\t%%eax, _%s(%%rip)\n",
-            tac->op1->text, tac->op2->text,
-            instruction, tac->res->text);
+
+    if (search(functionNameList, tac->op2->text))
+    {
+
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\tmovl\t_%s_Return(%%rip), %%edx\n"
+                      "\t%s\t%%edx, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                instruction, tac->res->text);
+    }
+
+    else
+    {
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
+                      "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\t%s\t%%edx, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                instruction, tac->res->text);
+    }
 }
 
 void asm_aritm_operation_eax_edx(TAC *tac, char *instruction)
 {
-    fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                  "\tmovl\t_%s(%%rip), %%edx\n"
-                  "\t%s\t%%edx, %%eax\n"
-                  "\tmovl\t%%eax, _%s(%%rip)\n",
-            tac->op1->text, tac->op2->text,
-            instruction, tac->res->text);
+    if (search(functionNameList, tac->op2->text))
+    {
+
+        fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
+                      "\tmovl\t_%s(%%rip), %%edx\n"
+                      "\t%s\t%%edx, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                instruction, tac->res->text);
+    }
+
+    else
+    {
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\tmovl\t_%s(%%rip), %%edx\n"
+                      "\t%s\t%%edx, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                instruction, tac->res->text);
+    }
 }
 
 void asm_div(TAC *tac)
