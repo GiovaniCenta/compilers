@@ -3,7 +3,16 @@
 #include "list.h"
 
 //GIOVANI DA SILVA ERE 2021
+char buffer_vector[256];
+char serial[256];
+char* buffer2;
+int g = 0;
+int h =0;
+char buffer3[256][100];
+char buffer4[256][100];
 
+int l = 0;
+char vector_name[256];
 
 
 TAC *create_tac_if(TAC *code0, TAC *code1);
@@ -25,10 +34,28 @@ TAC *tac_create(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2)
     return new_tac;
 }
 
-TAC *create_tac_op(int tac_type, TAC *code0, TAC *code1)
+TAC *create_tac_op(int tac_type, TAC *code0, TAC *code1, AST *node)
 {
+    HASH_NODE *aux2;
+    aux2 = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
+    //astPrint(node->son[0], 0);
+    if (node->son[0]->type == AST_VEC_SYMBOL)
+    {
+        aux2->text = node->son[0]->son[0]->symbol->text;
 
-    return tac_join(tac_join(code0, code1),
+        return tac_join(tac_join(code0, code1),
+                        tac_create(tac_type, make_temp(), aux2, code1 ? code1->res : 0));
+    }
+
+     else if (node->son[1]->type == AST_VEC_SYMBOL)
+    {
+        aux2->text = node->son[1]->son[0]->symbol->text;
+
+        return tac_join(tac_join(code0, code1),
+                        tac_create(tac_type, make_temp(), aux2, code1 ? code1->res : 0));
+    }
+
+    else return tac_join(tac_join(code0, code1),
                     tac_create(tac_type, make_temp(), code0 ? code0->res : 0, code1 ? code1->res : 0));
 }
 
@@ -48,9 +75,9 @@ void tac_print(TAC *tac)
         fprintf(stderr, "TAC_SYMBOL");
         break;
 
-    //case TAC_RETURN:
+        //case TAC_RETURN:
         //fprintf(stderr, "TAC_RETURN");
-       // break;
+        // break;
     case TAC_ADD:
         fprintf(stderr, "TAC_ADD");
         break;
@@ -141,11 +168,8 @@ void tac_print(TAC *tac)
         break;
 
     case TAC_DECL_VECTOR:
-    fprintf(stderr, "TAC_DECL_VECTOR");
+        fprintf(stderr, "TAC_DECL_VECTOR");
         break;
-
-    
-
 
     default:
         fprintf(stderr, "TAC_UNKNOWN");
@@ -192,6 +216,8 @@ TAC *tac_join(TAC *l1, TAC *l2)
 
 TAC *generate_code(AST *node)
 {
+    HASH_NODE *aux;
+        aux = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
 
     TAC *result = 0;
     TAC *code[MAX_SONS];
@@ -204,7 +230,7 @@ TAC *generate_code(AST *node)
         code[i] = generate_code(node->son[i]);
 
     // PROCESS THIS NODE
-    
+
     switch (node->type)
     {
 
@@ -217,8 +243,8 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_ADD ... AST_OR:
-    
-        result = create_tac_op(node->type, code[0], code[1]);
+
+        result = create_tac_op(node->type, code[0], code[1], node);
         break;
 
     case AST_NOT:
@@ -229,7 +255,7 @@ TAC *generate_code(AST *node)
         result = tac_create(TAC_READ, node->symbol, 0, 0);
         break;
     case AST_RETURN:
-    
+
         result = tac_join(code[0], tac_create(TAC_RET, node->symbol, code[0] ? code[0]->res : 0, 0));
         break;
 
@@ -247,42 +273,53 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_PRINT:
-        result = tac_join(tac_create(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0), code[1]);
-        break;
+        astPrint(node->son[0]->son[0]->son[3],0);
+        HASH_NODE *aux3;
+        aux3 = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
+        if(node->son[0]->son[0]->son[3]){
+            printf("\nentro aqui\n");
+        if(node->son[0]->son[0]->son[3]->type == AST_VEC_SYMBOL){
+            printf("\nentro aqui 2 \n");
+            aux3->text = node->son[0]->son[0]->son[3]->son[0]->symbol->text;
+            result = tac_join(tac_create(TAC_PRINT, aux3, 0, 0), code[1]);
+            break;
+        }
+        else
+        {
+            result = tac_join(tac_create(TAC_PRINT, code[0] ? code[0]->res : 0, 0, 0), code[1]);
+        }
+       
+        }
+         break;
+        
+        
 
     case AST_FUNCTION_CALL:
-     // node->son[1]->son[0]?node->son[1]->son[0]->symbol:0
-     
-        //result = tac_join(code[1],tac_join(tac_create(TAC_FUNCTION_CALL,code[0] ? code[0]->res : 0, 0,0),0));
-        result = tac_join(tac_join(code[1],tac_join(code[2], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0))),code[0]);
-        
-        break;
-     
-     
-        
-    
+        // node->son[1]->son[0]?node->son[1]->son[0]->symbol:0
 
+        //result = tac_join(code[1],tac_join(tac_create(TAC_FUNCTION_CALL,code[0] ? code[0]->res : 0, 0,0),0));
+        result = tac_join(tac_join(code[1], tac_join(code[2], tac_create(TAC_FUNCTION_CALL, make_temp(), node->son[0]->symbol, 0))), code[0]);
+
+        break;
 
     case AST_PARAMETER:
         //result = tac_join(code[0],tac_create(TAC_PARAMETER, 0, code[1] ? code[1]->res : 0, code[2] ? code[2]->res : 0));
         //result = tac_join(code[0], tac_create(TAC_PARAMETER, code[1]?code[1]->res:0, node->son[0]->symbol, 0));
         result = tac_join(tac_join(code[0], tac_create(TAC_PARAMETER, code[1] ? code[1]->res : 0, code[0] ? code[0]->res : 0, 0)), code[1]);
         break;
- 
 
     case AST_FUNC:
-        
 
-
-        if (strcmp(node->son[0]->symbol->text,"main") != 0){   //
-            result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0),code[1]),code[2]),tac_join(code[3],
-                          tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0)));
-        break;
+        if (strcmp(node->son[0]->symbol->text, "main") != 0)
+        { //
+            result = tac_join(tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0), code[1]), code[2]), tac_join(code[3],
+                                                                                                                                   tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0)));
+            break;
         }
-        else{
+        else
+        {
             result = tac_join(tac_join(tac_create(TAC_BEGINFUN, node->son[0]->symbol, 0, 0), code[1]),
-                          tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
-
+                              tac_create(TAC_ENDFUN, node->son[0]->symbol, 0, 0));
         }
         break;
 
@@ -297,7 +334,7 @@ TAC *generate_code(AST *node)
     case AST_VEC_DEC:
         if (!node->son[2])
         {
-            astPrint(node->son[0], 0);
+
             result = tac_join(code[0], tac_create(TAC_DECL_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0));
         }
         else
@@ -313,12 +350,12 @@ TAC *generate_code(AST *node)
     case AST_VEC_DEC_RANGE:
         if (!node->son[2])
         {
-            astPrint(node->son[0], 0);
+
             result = tac_join(code[0], tac_create(TAC_DECL_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0));
         }
         else
         {
-
+            
             result = tac_join(tac_create(TAC_DECL_VECTOR, node->son[1]->symbol, code[0] ? code[0]->res : 0, 0), code[1]);
             // note: when reaching AST_VEC_DEC the TAC_MOVE will receive it's symbol and index
 
@@ -327,16 +364,58 @@ TAC *generate_code(AST *node)
         break;
 
     case AST_VEC_ATTR:
+      
+         
+        
+        if(l==0){
+            strcpy(buffer_vector, node->son[0]->symbol->text);
+            strcpy(vector_name,buffer_vector);
+            
+            //l++;
+        }
+        strcpy(serial, node->son[1]->symbol->text);
+
+        printf("\nserial:%s\n",serial);
+        printf("\nvector_name:%s\n",vector_name);
+        
+        
+        
+
+        sprintf(buffer3[g], "%s[%s]", vector_name, serial);
+        printf("\nbuffer3[%d]:%s\n",g,buffer3[g]);
+        strcpy(buffer4[h],buffer3[g]);
+        
+        if(h == 0){
+            printf("\nh = 0\n");
+        node->son[0]->symbol->text = buffer4[0];
+        }
+        else if(h == 1){
+            printf("\nh = 1\n");
+        node->son[0]->symbol->text = buffer4[1];
+        }
+        else{
+            printf("\nh = 2\n");
+        node->son[0]->symbol->text = buffer4[2];
+        }
+        
+        aux->text = buffer3[g];
+        node->son[0]->symbol = aux;
+        h++;
+        g++;
+        
+        
+
         result = tac_join(code[2],
-                          tac_create(TAC_MOVE_VECTOR, node->son[0]->symbol, code[1] ? code[1]->res : 0, code[2] ? code[2]->res : 0));
+                          tac_create(TAC_MOVE_VECTOR, aux, code[1] ? code[1]->res : 0, code[2] ? code[2]->res : 0));
         //result = code[2];
+    
+      
         break;
 
     default:
         result = tac_join(code[0], tac_join(code[1], tac_join(code[2], code[3])));
         break;
     }
-    
 
     return result;
 }

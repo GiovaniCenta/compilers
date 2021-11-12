@@ -1,30 +1,39 @@
 data{
-int:ameixa=10;
-int:xuxu=10;
-int:i=0;
+
+    int[5]:vetor;
+
+    int:y=0;
 }
 
-int:pastel(int:p1,int:p2,int:p3,int:p4,int:p5){
-    p1 = 5 + p2;
-    return (p1);
-
+int:main(){
+    vetor[2] = 44;
+    vetor[5] = 77;
+    vetor[0] = 99;
     
-    
-}
-int :main(){
-print("oie string com espaço");
-print("\n");
-print("oie2");
-print("\n");
-print("\n");
-print("\n");
-print(xuxu);
-print("\n");
-print("depois");
-print("\n");
-
-
-
+    print("\n");
+    print(vetor[5]);
+    print(vetor[2]);
+    print("\n");
+    y = vetor[5] + 7 + vetor[2];
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -13,6 +13,9 @@ char *regsparameters[5] = {"esi", "edi", "edx", "ecx", "eax"};
 int cont_param_2 = 0;
 char *regsparameters_2[5] = {"esi", "edi", "edx", "ecx", "eax"};
 
+char *vectors_names[100];
+int vec_count = 0;
+
 FILE *fout;
 int m = 1;
 void generate_asm(TAC *first)
@@ -41,6 +44,7 @@ void generate_asm(TAC *first)
         {
             int valor = atoi(tac->op1->text);
             fprintf(fout, "\t.comm	%s,%d,16\n", tac->res->text, 4 * valor);
+            vectors_names[vec_count] = tac->res->text;
             break;
         }
 
@@ -270,7 +274,7 @@ void asm_move(TAC *tac)
                     4 * valor,
                     tac->res->text);
 
-            tac->op1->text = tac->op2->text;
+            //tac->op1->text = tac->op2->text;
         }
 
         else if (tac->op1->text)
