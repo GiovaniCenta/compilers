@@ -2,7 +2,7 @@ void decompileVarDec_vector_range(AST* node){
 
     //| type '[' LIT_INTEGER OPERATOR_RANGE LIT_INTEGER ']' ':' identifier '=' litlist   { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,$10); }
     //| type '[' LIT_INTEGER OPERATOR_RANGE LIT_INTEGER ']' ':' identifier        { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,0); }
-    exit(5);
+     (5);
     char varType[5];
     get_Type(node->symbol->type, varType);
     fprintf(decompilationFile, varType);

@@ -9,122 +9,93 @@ main:
 	movq	%rsp, %rbp
 
 ## TAC_MOVE
-	movl	_10(%rip), %eax
-	movl	%eax, _ameixa(%rip)
-## TAC_MOVE
-	movl	_10(%rip), %eax
-	movl	%eax, _xuxu(%rip)
-## TAC_MOVE
 	movl	_0(%rip), %eax
-	movl	%eax, _i(%rip)
+	movl	%eax, _y(%rip)
+## TAC_MOVE
+	movl	_15(%rip), %eax
+	movl	%eax, _k(%rip)
 	call	_main
 ## TAC_ENDFUN
 	popq	%rbp
 	ret
 
 
-## TAC_BEGINFUN
-.globl	_pastel
-_pastel:
-	pushq	%rbp
-	movq	%rsp, %rbp
-
-	 movl	%esi,_p1(%rip)
-	 movl	%edi,_p2(%rip)
-	 movl	%edx,_p3(%rip)
-	 movl	%ecx,_p4(%rip)
-	 movl	%eax,_p5(%rip)
-	movl	_5(%rip), %edx
-	movl	_p2(%rip), %eax
-	addl	%edx, %eax
-	movl	%eax, _mYWeeirT_emp0(%rip)
-## TAC_MOVE
-	movl	_mYWeeirT_emp0(%rip), %eax
-	movl	%eax, _p1(%rip)
-	##TAC_RET
-	movl	_p1(%rip), %eax
-## TAC_ENDFUN
-	popq	%rbp
-	ret
+	.comm	vetor,60,16
+	.comm	vetor3,48,16
+	.comm	vetor2,20,16
 ## TAC_BEGINFUN
 .globl	_main
 _main:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
-## TAC_PRINT_STRING
-	leaq	_oiestringcomespaço(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_oie2(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT
-	movl	_xuxu(%rip), %esi
-	leaq	.printintstr(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_depois(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
-## TAC_PRINT_STRING
-	leaq	_n(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
-	movl	$0, %eax
+	 movl	$1,%esi
+	 movl	$2,%edi
+	 movl	$3,%edx
+	 movl	$4,%ecx
+	 call _function 
+	movl	%eax,_function_Return(%rip)
+## TAC_MOVE
+	movl	_function(%rip), %eax
+	movl	%eax, _k(%rip)
+## OPERATION EDX EAX
+	movl	_10(%rip), %edx
+	movl	_5(%rip), %eax
+	addl	%edx, %eax
+	movl	%eax, _mYWeeirT_emp2(%rip)
+## TAC_MOVE
+	movl	_mYWeeirT_emp2(%rip), %eax
+	movl	%eax, _k(%rip)
+	##TAC_RET
+	movl	_5(%rip), %eax
+## TAC_ENDFUN
+	popq	%rbp
+	ret
+## TAC_BEGINFUN
+.globl	_function
+_function:
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	 movl	%esi,_p1(%rip)
+	 movl	%edi,_p2(%rip)
+	 movl	%edx,_p3(%rip)
+## OPERATION EDX EAX
+	movl	_15(%rip), %edx
+	movl	_"string"(%rip), %eax
+	addl	%edx, %eax
+	movl	%eax, _mYWeeirT_emp3(%rip)
+## TAC_MOVE
+	movl	_mYWeeirT_emp3(%rip), %eax
+	movl	%eax, _y(%rip)
 ## TAC_ENDFUN
 	popq	%rbp
 	ret
 
 ## DATA SECTION
 .data
-_p5: .long	0
 _main_Return: .long	0
 _0: .long	0
+_1: .long	1
+_2: .long	2
+_3: .long	3
+_4: .long	4
 _5: .long	5
-_i: .long	0
+_k: .long	0
+_y: .long	0
 _mYWeeirT_emp0: .long	0
-_pastel_Return: .long	0
+_mYWeeirT_emp1: .long	0
+_mYWeeirT_emp2: .long	0
+_vetor3: .zero	400
+_mYWeeirT_emp3: .long	0
 _10: .long	10
+_string: .string	"string"
+_12: .long	12
+_vetor: .zero	400
 _p1: .long	0
-_xuxu: .long	0
-_ameixa: .long	0
-_oie2: .string	"oie2"
+_15: .long	15
 _p2: .long	0
-_oiestringcomespaço: .string	"oie string com espaço"
+_vetor2: .zero	400
 _p3: .long	0
-_n: .string	"\n"
-_depois: .string	"depois"
-_p4: .long	0
+_function_Return: .long	0
 .section .rodata

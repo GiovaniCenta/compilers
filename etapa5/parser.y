@@ -4,6 +4,7 @@
     #include "ast.h"
     #include "semantic.h"
     #include "tacs.h"
+   
     #include <stdlib.h>
     int yyerror();
     int getLineNumber();
@@ -86,13 +87,18 @@
 %%
 
 program: data_decl { $$ = $1;  mainAST = $$;
-                
+                 TAC* code;
                 check_and_set_declarations($1);
                 
                 check_undeclared();
-                check_operands($1);
+               check_operands($1);
                 check_commands($1);
-                tac_print_backwards(generate_code($1));
+                
+                
+                code = generate_code($1);
+                tac_print_backwards(code);
+                        
+               
                 
                 
                 
@@ -197,9 +203,9 @@ functionlist:
 
 
 function:
-    type ':' identifier '(' parameter_init parameterslist_init ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$5,$6,$8); }
-	|type ':' identifier '(' ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$6,0,0); }
-    |type ':' identifier '(' parameter_init ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$5,$7,0); }
+    type ':' identifier '(' parameter_init parameterslist_init ')' block    { $$ = astCreate(AST_FUNC,$1->symbol,$3,$5,$6,$8); }
+	|type ':' identifier '(' ')' block    { $$ = astCreate(AST_FUNC,$1->symbol,$3,$6,0,0); }
+    |type ':' identifier '(' parameter_init ')' block    { $$ = astCreate(AST_FUNC,$1->symbol,$3,$5,$7,0); }
     ;
 
 
@@ -222,11 +228,11 @@ declist:
 
 
 dec:
-	type ':' identifier '=' literal     { $$ = astCreate(AST_VAR_DEC,0,$1,$3,$5,0); }
-    | type '[' literal ']' ':' identifier '=' litlist { $$ = astCreate(AST_VEC_DEC,$1,$3,$6,$8,0); }
-    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier '=' litlist   { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,$10); }
-    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier        { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,0); }
-    | type '[' literal ']' ':' identifier   { $$ = astCreate(AST_VEC_DEC,$1,$3,$6,0,0);}
+	type ':' identifier '=' literal     { $$ = astCreate(AST_VAR_DEC,$1->symbol,$1,$3,$5,0); }
+    | type '[' literal ']' ':' identifier '=' litlist { $$ = astCreate(AST_VEC_DEC,$1->symbol,$3,$6,$8,0); }
+    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier '=' litlist   { $$ = astCreate(AST_VEC_DEC_RANGE,$1->symbol,$3,$5,$8,$10); }
+    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier        { $$ = astCreate(AST_VEC_DEC_RANGE,$1->symbol,$3,$5,$8,0); }
+    | type '[' literal ']' ':' identifier   { $$ = astCreate(AST_VEC_DEC,$1->symbol,$3,$6,0,0);}
     | {$$=0;}
     ;
 

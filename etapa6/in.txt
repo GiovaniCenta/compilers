@@ -1,27 +1,56 @@
 data{
-int:ameixa=10;
-int:xuxu=10;
+int[5]:vetor;
+int:y=0;
+int:x=100;
 int:i=0;
+int:operacao=0;
 }
 
-int:pastel(int:p1,int:p2,int:p3,int:p4,int:p5){
-    p1 = 5 + p2;
-    return (p1);
-
-    
-    
+int:function(int:parametro1,int:parametro2,int:parametro3){
+    parametro2 = 200;
+    parametro3 = 500;
+    parametro1 = parametro1 + parametro3 - parametro2;
+    print("valor do p1 eh ");
+    print(parametro1);
+    print("\n");
+    return (parametro1);
 }
-int :main(){
-print("oie string com espaço");
+int:main(){
+vetor[2] = 77;
+y=vetor[2];
 print("\n");
-print("oie2");
+print("o valor de y eh ");
+print(y);
 print("\n");
 print("\n");
+x = function(100,0,0) + 50;
+print("retorno mais 50 eh ");
+print(x);
 print("\n");
-print(xuxu);
+print("oi vou entrar no until");
 print("\n");
-print("depois");
+until(i==7){
+    print("valor de i eh ");
+    print(i);
+     print("\n");
+    i=i+1;
+};
 print("\n");
+print("oi sai do until ");
+operacao = vetor[2] + 50;
+if(operacao>50){
+    print("\n");
+    print("estou dentro do if");
+    print("\n");
+}
+else{
+    print("\n");
+    print("estou dentro do else");
+    print("\n");
+};
+
+
+
 
 
 

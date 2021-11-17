@@ -3,7 +3,7 @@
 #define _OPEN_SYS_ITOA_EXT
 #include <stdio.h>
 #include <string.h>
-#include "list.h"
+
 #define STR_MAX 100;
 //GIOVANI DA SILVA ERE 2021
 
@@ -16,6 +16,9 @@ HASH_NODE *Table[HASH_SIZE];
 
 char *strings[100];
 int str_index = 0;
+
+char *names[100];
+int p = 0;
 
 char str[4] = "str";
 char output[50];
@@ -137,9 +140,10 @@ void print_asm(FILE *fout)
     {
         for (node = Table[i]; node; node = node->next)
         {
-            if (!search(head, node->text))
+            if (!search_already(node->text))
             {
-                push(&head, node->text);
+                names[p] = node->text;
+                p++;
 
                 switch (node->type)
                 {
@@ -171,16 +175,16 @@ void print_asm(FILE *fout)
                 case SYMBOL_LIT_STRING:
                     printf("\n");
                     char out[50];
-                    stpcpy(out,node->text);
+                    stpcpy(out, node->text);
                     str_treatment(node->text);
-                    if(string_already(node->text) == 0){
-                    strings[str_index] = node->text;
-                    str_index++;
-                    fprintf(fout, "_%s: .string\t%s\n", node->text, out);
+                    if (string_already(node->text) == 0)
+                    {
+                        strings[str_index] = node->text;
+                        str_index++;
+                        fprintf(fout, "_%s: .string\t%s\n", node->text, out);
                     }
                     break;
 
-                
                 default:
                     break;
                 }
@@ -208,51 +212,48 @@ int string_already(char *str)
     return 0;
 }
 
+void str_treatment(char *str_in)
+{
+    char *string1;
+    string1 = malloc(sizeof(str_in));
+    strcpy(string1, str_in);
+    //printf("\nstring antes da remocao de espaco: %s\n", string1);
+    char *str = str_in;
+    char *write = str, *read = str;
+    do
+    {
+        if (*read != ' ')
+            *write++ = *read;
+    } while (*read++);
+    //printf("\nstring dps da remocao de espaco: %s\n", str);
+    //trocar /n por barra n
+    char *str1 = str_in;
 
- void str_treatment(char* str_in){
-                    char *string1;
-                    string1 = malloc(sizeof(str_in)); 
-                    strcpy(string1, str_in);
+    char *write1 = str1, *read1 = str1;
+    do
+    {
+        if (*read1 != '\\')
+            *write1++ = *read1;
+    } while (*read1++);
+    //printf("\nstring dps da remocao de barra: %s\n", str1);
+    char *str2 = str_in;
+    char *write2 = str2, *read2 = str2;
+    do
+    {
+        if (*read2 != '\"')
+            *write2++ = *read2;
+    } while (*read2++);
+    //printf("\nstring dps da remocao de aspas: %s\n", str2);
+}
 
-                    //printf("\nstring antes da remocao de espaco: %s\n", string1);
-
-                   //remover espaços   oook
-                    char *str = str_in;
-
-                    char *write = str, *read = str;
-                    do
-                    {
-                        if (*read != ' ')
-                            *write++ = *read;
-                    } while (*read++);
-                    //printf("\nstring dps da remocao de espaco: %s\n", str);
-                   
-
-                    
-
-                    //trocar /n por barra n
-
-                char *str1 = str_in;
-
-                    char *write1 = str1, *read1 = str1;
-                    do
-                    {
-                        if (*read1 != '\\')
-                            *write1++ = *read1;
-                    } while (*read1++);
-                    //printf("\nstring dps da remocao de barra: %s\n", str1);
-
-
-                char *str2 = str_in;
-
-                    char *write2 = str2, *read2 = str2;
-                    do
-                    {
-                        if (*read2 != '\"')
-                            *write2++ = *read2;
-                    } while (*read2++);
-                    //printf("\nstring dps da remocao de aspas: %s\n", str2);
-
-                return str2;
-                    }
-
+int search_already(char *str)
+{
+    for (int i = 0; i < 100; i++)
+    {
+        if (str == names[i])
+        {
+            return 1;
+        }
+    }
+    return 0;
+}

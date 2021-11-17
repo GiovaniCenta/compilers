@@ -21,14 +21,14 @@ int tok;
 if (argc<2)
 {
     fprintf(stderr,"Call: ./etapa3 file_name\n");
-    exit(1);
+     (1);
 }
 yyin = fopen(argv[1],"r"); 
 
 decompilationOutputFile = fopen(argv[2], "w");
   if (decompilationOutputFile == 0){
     fprintf(stderr, "Cannot open file %s\n", argv[2]);
-    exit(2);
+     (2);
   }
   
   
@@ -37,7 +37,7 @@ decompilationOutputFile = fopen(argv[2], "w");
    int semanticErrors = get_semantic_errors();
   if (semanticErrors > 0){
       fprintf(stderr, "ERROR! There are : %d  Semantic Errors! \n", semanticErrors);
-      exit(4);
+       (4);
     }
   hashPrint();
   
@@ -54,6 +54,6 @@ decompilationOutputFile = fopen(argv[2], "w");
   
   
   
-  exit(0); //0 is CODE for SUCCESS
+   (0); //0 is CODE for SUCCESS
 }
 

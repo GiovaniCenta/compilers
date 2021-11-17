@@ -1,10 +1,12 @@
 
 #include "asm.h"
 #include <string.h>
-#include "list.h"
+
 
 struct Node *functionNameList = NULL;
 extern struct Node* head;
+char *arraydefuncoes[100];
+int funcoes_index = 0;
 
 
 int cont_param_1 = 0;
@@ -122,7 +124,7 @@ void generate_asm(TAC *first)
             asm_aritm_operation_edx_eax(tac, "addl");
             break;
         case TAC_SUB:
-            asm_aritm_operation_edx_eax(tac, "subl");
+            asm_aritm_operation_eax_edx(tac, "subl");
             break;
 
         case TAC_OR:
@@ -182,7 +184,9 @@ void asm_beginfun(TAC *tac)
                   "\tmovq	%%rsp, %%rbp\n\n",
 
             tac->res->text, tac->res->text);
-    push(&functionNameList, tac->res->text);
+    arraydefuncoes[funcoes_index] = tac->res->text;
+    funcoes_index++;
+
 }
 
 void asm_endfun()
@@ -255,7 +259,7 @@ TAC *asm_var_declar(TAC *first)
 void asm_move(TAC *tac)
 {
 
-    if (!search(functionNameList, tac->op1->text))
+    if (!is_function(tac->op1->text))
     {
         if (tac->op2)
         { //ITS A VECTOR
@@ -290,11 +294,11 @@ void asm_move(TAC *tac)
 void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 {
 
-    if (search(functionNameList, tac->op2->text))
+    if (is_function(tac->op2->text) == 1 || is_function(tac->op1->text) == 1)
     {
-
-        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                      "\tmovl\t_%s_Return(%%rip), %%edx\n"
+        fprintf(fout,"## OPERATION WITH FUNCTION CALL EDX EAX\n");
+        fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
+                      "\tmovl\t_%s(%%rip), %%edx\n"
                       "\t%s\t%%edx, %%eax\n"
                       "\tmovl\t%%eax, _%s(%%rip)\n",
                 tac->op1->text, tac->op2->text,
@@ -303,6 +307,7 @@ void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 
     else
     {
+        fprintf(fout,"## OPERATION EDX EAX\n");
         fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
                       "\tmovl\t_%s(%%rip), %%eax\n"
                       "\t%s\t%%edx, %%eax\n"
@@ -314,9 +319,9 @@ void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 
 void asm_aritm_operation_eax_edx(TAC *tac, char *instruction)
 {
-    if (search(functionNameList, tac->op2->text))
+     if (is_function(tac->op2->text) == 1 || is_function(tac->op1->text) == 1)
     {
-
+        fprintf(fout,"## OPERATION WITH FUNCTION CALL EAX EDX\n");
         fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
                       "\tmovl\t_%s(%%rip), %%edx\n"
                       "\t%s\t%%edx, %%eax\n"
@@ -327,6 +332,7 @@ void asm_aritm_operation_eax_edx(TAC *tac, char *instruction)
 
     else
     {
+        fprintf(fout,"## OPERATION EAX EDX\n");
         fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
                       "\tmovl\t_%s(%%rip), %%edx\n"
                       "\t%s\t%%edx, %%eax\n"
@@ -367,4 +373,19 @@ void asm_not(TAC *tac)
                   "\tmovzb\t%%al, %%eax\n"
                   "\tmovl\t%%eax, _%s(%%rip)\n",
             tac->op1->text, tac->res->text);
+}
+
+
+int is_function(char *functionName){
+    char buffer[256];
+    sprintf(buffer,"_%s",functionName);
+    for(int i=0;i<100;i++){
+        //printf("\n\tbuffer:%s\tarraydefuncoes[%d]:%s\n",functionName,i,arraydefuncoes[i]);
+        if(arraydefuncoes[i] == functionName){
+        
+            
+            return 1;
+        }
+    }
+    return 0;
 }

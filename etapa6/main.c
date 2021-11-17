@@ -39,7 +39,7 @@ decompilationOutputFile = fopen(argv[2], "w");
       fprintf(stderr, "ERROR! There are : %d  Semantic Errors! \n", semanticErrors);
       exit(4);
     }
-  //hashPrint();
+  hashPrint();
   
   //fprintf(stdout, "Compilation successful!\n");
   //fprintf(stdout, "Generated AST:\n\n");

@@ -1,34 +1,66 @@
-## UFRGS - Compiladores - Marcelo Johann - 2021/1
+data{
+int[5]:vetor;
+int:y=0;
+int:x=100;
+int:i=0;
+int:operacao=0;
+}
 
-data {
+int:function(int:parametro1,int:parametro2,int:parametro3){
+    
+    parametro1 = 100;
+    parametro2 = 200;
+    parametro3 = 300;
+    parametro1 = parametro1 + parametro3 - parametro2;
+    print("valor do p1 eh ");
+    print(parametro1);
+    print("\n");
+   
+    return (parametro1);
+}
+int:main(){
+y=15*15;
+y=vetor[2] + 77;
+print("\n");
+print("o valor de y eh ");
+print(y);
+print("\n");
+print("\n");
+
+x = function(100,0,0) + 50;
+print("retorno mais 50 eh ");
+print(x);
+print("\n");
+print("oi vou entrar no until");
+print("\n");
+until(i==7){
+    
+    print("valor de i eh ");
+    print(i);
+     print("\n");
+    i=i+1;
+
+};
+print("\n");
+
+print("oi sai do until ");
+operacao = vetor[2] + 50;
+if(operacao>50){
+    print("\n");
+    print("estou dentro do if");
+    print("\n");
+}
+else{
+    print("\n");
+    print("estou dentro do else");
+    print("\n");
+};
 
 
-
-int[5]:pastelzinho = 15 25 27 24 42;
-##int[4]:ameixinha;
 
 
 
 
 
 }
-
-
-int: pizza ()
-  {
-
-
-  }
-
-
-
-
-
-
-  
-
-
-
-  
-
 

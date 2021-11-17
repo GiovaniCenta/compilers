@@ -41,6 +41,7 @@ typedef struct hash_node {
 } HASH_NODE;
 
 
+
 void hashInit(void);
 int hashAddress(char *text);
 HASH_NODE *hashFind(char *text);
@@ -51,5 +52,12 @@ int hash_check_undeclared(void);
 
 HASH_NODE* make_temp();
 HASH_NODE* make_label();
+void print_asm(FILE *fout);
+
+
+ void str_treatment(char* str_in);
+ int string_already(char *str);
+ int search_already(char *str);
+
 #endif
 // END

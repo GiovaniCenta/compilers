@@ -59,10 +59,11 @@ void check_dec_and_set_two(AST *node, int symboltype)
             }
 
             //decl_parameters(node);
+            
             declare_parameters(node,node->son[0]->symbol->text);
             check_parameter_in_other_function(node,node->son[0]->symbol->text);
             functions_name[n] = node->son[0]->symbol->text;
-            nparam[n] = node->son[0]->symbol->numparam;
+            nparam[n] = &node->son[0]->symbol->numparam;
             n++;
             //fprintf(stderr, "\n identifier %s na posicao %d \n", node->son[0]->symbol->text, n);
 
@@ -70,11 +71,11 @@ void check_dec_and_set_two(AST *node, int symboltype)
             if (node->son[0])
             {
 
-                if (node->symbol->type == AST_CHAR)
+                if (node->type == AST_CHAR)
                     node->son[0]->symbol->datatype = DATATYPE_CHAR;
-                else if (node->symbol->type == AST_INT)
+                else if (node->type == AST_INT)
                     node->son[0]->symbol->datatype = DATATYPE_INT;
-                else if (node->symbol->type == AST_FLOAT)
+                else if (node->type == AST_FLOAT)
                     node->son[0]->symbol->datatype = DATATYPE_FLOAT;
             }
             int func_dataype = node->son[0]->symbol->datatype;
@@ -90,22 +91,26 @@ void check_dec_and_set_two(AST *node, int symboltype)
                         node->son[1]->symbol->text);
                 ++SemanticErrors;
             }
+           
             node->son[1]->symbol->type = symboltype;
-
+             
             check_vector_length(node);
             //check_vectorparam_nature(node);
-
+            
             //==============SET DATATYPE=============================
             if (node->son[0])
             {
-                if (node->symbol->type == AST_CHAR)
+                
+                if (node->type == AST_CHAR)
                     node->son[1]->symbol->datatype = DATATYPE_CHAR;
-                else if (node->symbol->type == AST_INT)
+                else if (node->type == AST_INT)
                     node->son[1]->symbol->datatype = DATATYPE_INT;
-                else if (node->symbol->type == AST_FLOAT)
+                else if (node->type == AST_FLOAT)
                     node->son[1]->symbol->datatype = DATATYPE_FLOAT;
             }
+            
             //===========================================
+       
         }
         else if (symboltype == SYMBOL_VECTOR_RANGE) //tive que fazer um caso especial para function pois é o filho, nao o symbol diretamente
         {
@@ -123,11 +128,11 @@ void check_dec_and_set_two(AST *node, int symboltype)
             //==============SET DATATYPE=============================
             if (node->son[2])
             {
-                if (node->symbol->type == AST_CHAR)
+                if (node->type == AST_CHAR)
                     node->son[2]->symbol->datatype = DATATYPE_CHAR;
-                else if (node->symbol->type == AST_INT)
+                else if (node->type == AST_INT)
                     node->son[2]->symbol->datatype = DATATYPE_INT;
-                else if (node->symbol->type == AST_FLOAT)
+                else if (node->type == AST_FLOAT)
                     node->son[2]->symbol->datatype = DATATYPE_FLOAT;
             }
             //===========================================
@@ -218,17 +223,22 @@ void check_and_set_declarations(AST *node)
         return;
 
     int i;
-
+    if(aux->type){
+    
     switch (aux->type)
     {
+       
     case AST_VAR_DEC:
     {
+        
         check_dec_and_set_two(aux, SYMBOL_VARIABLE);
         break;
     }
 
     case AST_VEC_DEC:
+       
         check_dec_and_set_two(aux, SYMBOL_VECTOR);
+         
 
         break;
 
@@ -252,6 +262,7 @@ void check_and_set_declarations(AST *node)
     case (AST_LABEL_LIT):
         check_dec_and_set_two(aux, SYMBOL_LABEL_LIT);
         break;
+    }
     }
     if (aux == 0)
         return;
@@ -548,11 +559,12 @@ int cont_vector_param(AST *node)
             return cont;
         }
     }
+    return 0;
 }
 
 void check_numparam(AST *node)
 {
-
+    int aux;
     //logica: toda vez que uma funcao é declarada é guardada uma posicao no vetor de nome de funcoes e outra no numero de parametros
     //serao usadas na comparacao aqui em baixo, ambas sao a mesma posicao
 
@@ -560,10 +572,11 @@ void check_numparam(AST *node)
     {
         if (functions_name[i] == node->son[0]->son[0]->symbol->text)
         {
-            if (nparam[i]  != count_numparam(node))
+            aux = *nparam[i];
+            if (aux  != count_numparam(node))
             {
-                printf("\nnparam_decl:%d\tcount_num_call:%d\n",nparam[i],count_numparam(node));
-                printf("\n\nSEMANTIC ERROR! number of parameters of function declaration:%d and call:%d are different\n\n",nparam[i],count_numparam(node));
+                printf("\nnparam_decl:%d\tcount_num_call:%d\n",aux,count_numparam(node));
+                printf("\n\nSEMANTIC ERROR! number of parameters of function declaration:%d and call:%d are different\n\n",aux,count_numparam(node));
                 SemanticErrors++;
                 //exit(7);
             }
@@ -771,7 +784,9 @@ int count_numparam(AST *node)
             }
             return cont;
         }
+        return 0;
     }
+    return 0;
 }
 
 void check_vectorparam_nature(AST *node)

@@ -11,7 +11,7 @@ void get_Type(int TypeID, char* type){
         case AST_INT: strcpy(type, "int"); break;
         case AST_FLOAT: strcpy(type, "float"); break;
         case AST_CHAR: strcpy(type, "char"); break;
-        default: fprintf(stderr, "ERROR! UNKNOW TYPE: %d\n\n", TypeID); exit(15); break;
+        default: fprintf(stderr, "ERROR! UNKNOW TYPE: %d\n\n", TypeID);  (15); break;
     }
     return;
 }
@@ -247,7 +247,7 @@ void decompilePrint(AST* node){
     //astPrint(node->son[0],0);
     //decompileSwitchExpr(node->son[0]);
     decompileExprList(node->son[0]);
-    //exit(5);
+    // (5);
 }
 
 
@@ -255,7 +255,7 @@ void decompileReturn(AST* node){
     
     fprintf(decompilationFile, "return ");
     decompileSwitchExpr(node->son[0]);
-    //exit(5);
+    // (5);
 }
 
 
@@ -315,14 +315,14 @@ void decompileMathExprSwitch(AST *node){
         case AST_GE:fprintf(decompilationFile," >= " );break;
         case AST_EQ:fprintf(decompilationFile, " == ");break;
         case AST_DIF:fprintf(decompilationFile," != " );break;
-        default:printf("\n\ntype not found\n\n");exit(5);break;
+        default:printf("\n\ntype not found\n\n"); (5);break;
    }
     
    if(node->son[1]->son[0]!=0)
         decompileSwitchExpr(node->son[1]);//fprintf(decompilationFile, node->son[1]->son[0]->symbol->text);
     else
         fprintf(decompilationFile, node->son[1]->symbol->text);
-    //exit(5);
+    // (5);
 }
 
 
@@ -343,7 +343,7 @@ void decompileIdenLit(AST *node){
     fprintf(decompilationFile,node->son[0]->symbol->text);
     fprintf(decompilationFile," ");
     fprintf(decompilationFile,node->son[1]->symbol->text);
-    exit(5);
+     (5);
 
 }
 
@@ -426,7 +426,7 @@ void decompileSwitchExpr(AST *node){
 
 
 
-        default:printf("\n\ndecompilation error, expression not found...exiting\n\n");exit(5);break;
+        default:printf("\n\ndecompilation error, expression not found... ing\n\n"); (5);break;
     }
 
 }
@@ -483,7 +483,7 @@ void switchDecompilation(AST* node){
         
         
         
-        default: printf("\n\ndecompilation error, exiting... \n\n"); exit(101);break;
+        default: printf("\n\ndecompilation error,  ing... \n\n");  (101);break;
     }
     return;
 }
@@ -528,7 +528,7 @@ void decompileFlowControl(AST *node){
         case AST_IF:decompileIF(node->son[0]);break;
         case AST_IF_ELSE:decompileIFElse(node->son[0]);break;
         case AST_UNTIL:decompileUntil(node->son[0]);break;
-        default:printf("\nFLOW CONTROL NOT FOUND...exiting\n");exit(5);break;
+        default:printf("\nFLOW CONTROL NOT FOUND... ing\n"); (5);break;
 }
 
 }
@@ -543,7 +543,7 @@ void decompilationComeFrom(AST *node){
 
 void decompileSwitchCMD(AST* node){
     // printf("\n\nCHEGOU AQUI no switch CMD");
-    //exit(201);
+    // (201);
     fprintf(decompilationFile,"    ");
     switch(node->type){
         case AST_ATTR: decompileAttr(node);break;
@@ -559,7 +559,7 @@ void decompileSwitchCMD(AST* node){
 
 
 
-        default:printf("\n\ndecompilation error, cmd not found...exiting\n\n");exit(5);break;
+        default:printf("\n\ndecompilation error, cmd not found... ing\n\n"); (5);break;
     }
     }
 

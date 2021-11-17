@@ -38,96 +38,78 @@ int SemanticErrors = 0;
 
 void check_dec_and_set_two(AST *node, int symboltype)
 {
-    
 
     if (node->symbol || node->son[0]->symbol || node->son[1]->symbol || node)
     {
         if (symboltype == SYMBOL_FUNCTION) //tive que fazer um caso especial para function pois é o filho, nao o symbol diretamente
         {
 
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[0]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[0]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[0]->symbol->text);
                 ++SemanticErrors;
             }
-       
-            node->symbol->type = symboltype;
-            
-            node->symbol->numparam = count_numparam(node);
-           
-           
-            for (int i = 0; i < node->symbol->numparam; i++)
+
+            node->son[0]->symbol->type = symboltype;
+            node->son[0]->symbol->numparam = count_numparam(node);
+            for (int i = 0; i < node->son[0]->symbol->numparam; i++)
             {
-                param_function[i] = node->symbol->text;
+                param_function[i] = node->son[0]->symbol->text;
             }
-             
 
             //decl_parameters(node);
-           
-            declare_parameters(node,node->symbol->text);
-            
-            check_parameter_in_other_function(node,node->symbol->text);
-            
-            functions_name[n] = node->symbol->text;
-            
-            nparam[n] = &node->symbol->numparam;
+            declare_parameters(node,node->son[0]->symbol->text);
+            check_parameter_in_other_function(node,node->son[0]->symbol->text);
+            functions_name[n] = node->son[0]->symbol->text;
+            nparam[n] = node->son[0]->symbol->numparam;
             n++;
-            
             //fprintf(stderr, "\n identifier %s na posicao %d \n", node->son[0]->symbol->text, n);
 
             //==============SET DATATYPE=============================
             if (node->son[0])
             {
 
-                if (node->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
-                else if (node->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
-                else if (node->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                if (node->symbol->type == AST_CHAR)
+                    node->son[0]->symbol->datatype = DATATYPE_CHAR;
+                else if (node->symbol->type == AST_INT)
+                    node->son[0]->symbol->datatype = DATATYPE_INT;
+                else if (node->symbol->type == AST_FLOAT)
+                    node->son[0]->symbol->datatype = DATATYPE_FLOAT;
             }
-            int func_dataype = node->symbol->datatype;
+            int func_dataype = node->son[0]->symbol->datatype;
             check_return_nature(node, func_dataype);
-            
 
             //===========================================
         }
         else if (symboltype == SYMBOL_VECTOR) //tive que fazer um caso especial para function pois é o filho, nao o symbol diretamente
         {
-           
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[1]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[1]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[1]->symbol->text);
                 ++SemanticErrors;
             }
-           
-            node->symbol->type = symboltype;
-            
-            
+            node->son[1]->symbol->type = symboltype;
+
             check_vector_length(node);
-            
             //check_vectorparam_nature(node);
-            
+
             //==============SET DATATYPE=============================
             if (node->son[0])
             {
-                
-                if (node->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
-                else if (node->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
-                else if (node->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                if (node->symbol->type == AST_CHAR)
+                    node->son[1]->symbol->datatype = DATATYPE_CHAR;
+                else if (node->symbol->type == AST_INT)
+                    node->son[1]->symbol->datatype = DATATYPE_INT;
+                else if (node->symbol->type == AST_FLOAT)
+                    node->son[1]->symbol->datatype = DATATYPE_FLOAT;
             }
-            
             //===========================================
-       
         }
         else if (symboltype == SYMBOL_VECTOR_RANGE) //tive que fazer um caso especial para function pois é o filho, nao o symbol diretamente
         {
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->son[2]->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[2]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[2]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
                         node->son[2]->symbol->text);
@@ -136,84 +118,79 @@ void check_dec_and_set_two(AST *node, int symboltype)
 
             check_vector_length(node);
             check_vectorparam_nature(node);
-            node->symbol->type = symboltype;
+            node->son[2]->symbol->type = symboltype;
 
             //==============SET DATATYPE=============================
             if (node->son[2])
             {
-                if (node->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
-                else if (node->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
-                else if (node->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                if (node->symbol->type == AST_CHAR)
+                    node->son[2]->symbol->datatype = DATATYPE_CHAR;
+                else if (node->symbol->type == AST_INT)
+                    node->son[2]->symbol->datatype = DATATYPE_INT;
+                else if (node->symbol->type == AST_FLOAT)
+                    node->son[2]->symbol->datatype = DATATYPE_FLOAT;
             }
             //===========================================
         }
 
         else if (symboltype == SYMBOL_VARIABLE)
         {
-           
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[1]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[1]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[1]->symbol->text);
                 ++SemanticErrors;
             }
-            
 
-            node->symbol->type = SYMBOL_VARIABLE;
-        
+            node->son[1]->symbol->type = SYMBOL_VARIABLE;
+
             //==============SET DATATYPE=============================
             if (node->son[0])
             {
                 if (node->son[0]->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
+                    node->son[1]->symbol->datatype = DATATYPE_CHAR;
                 else if (node->son[0]->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
+                    node->son[1]->symbol->datatype = DATATYPE_INT;
                 else if (node->son[0]->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                    node->son[1]->symbol->datatype = DATATYPE_FLOAT;
             }
             //===========================================
-            
             check_dec_var_nature(node);
-           
         }
         else if (symboltype == SYMBOL_PARAMETER)
         {
-           
 
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[1]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[1]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[1]->symbol->text);
                 ++SemanticErrors;
             }
 
-            node->symbol->type = SYMBOL_PARAMETER;
+            node->son[1]->symbol->type = SYMBOL_PARAMETER;
             //param_names[pid] = node->son[1]->symbol->text;
             //pid++;
 
             if (node->son[0])
             {
                 if (node->son[0]->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
+                    node->son[1]->symbol->datatype = DATATYPE_CHAR;
                 else if (node->son[0]->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
+                    node->son[1]->symbol->datatype = DATATYPE_INT;
                 else if (node->son[0]->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                    node->son[1]->symbol->datatype = DATATYPE_FLOAT;
             }
         }
         else if (symboltype == SYMBOL_LABEL) //tive que fazer um caso especial para function pois é o filho, nao o symbol diretamente
         {
-            if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+            if ((node->son[0]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[0]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[0]->symbol->text);
                 ++SemanticErrors;
             }
-            node->symbol->type = symboltype;
-            labels_name[lc] = node->symbol->text;
+            node->son[0]->symbol->type = symboltype;
+            labels_name[lc] = node->son[0]->symbol->text;
             label_vector[lc] = 0;
             lc++;
         }
@@ -241,22 +218,17 @@ void check_and_set_declarations(AST *node)
         return;
 
     int i;
-    if(aux->type){
-    
+
     switch (aux->type)
     {
-       
     case AST_VAR_DEC:
     {
-        
         check_dec_and_set_two(aux, SYMBOL_VARIABLE);
         break;
     }
 
     case AST_VEC_DEC:
-       
         check_dec_and_set_two(aux, SYMBOL_VECTOR);
-         
 
         break;
 
@@ -280,7 +252,6 @@ void check_and_set_declarations(AST *node)
     case (AST_LABEL_LIT):
         check_dec_and_set_two(aux, SYMBOL_LABEL_LIT);
         break;
-    }
     }
     if (aux == 0)
         return;
@@ -327,14 +298,14 @@ void check_operands(AST *node)
             fprintf(stderr, "Semantic ERROR: INVALID left operand for ADD ,SUB, MUL, OR DIV\n");
             ++SemanticErrors;
 
-            //// (5);
+            ////exit(5);
         }
 
         if (!is_number(node->son[1]))
         {
             fprintf(stderr, "Semantic ERROR: INVALID right operand for ADD ,SUB, MUL, OR DIV\n");
             ++SemanticErrors;
-            //// (5);
+            ////exit(5);
         }
         break;
     }
@@ -364,7 +335,7 @@ void check_range_vector(AST *node)
             {
                 printf("\nSemantic Error! Vector out of range!\n");
                 SemanticErrors++;
-                // (9);
+                //exit(9);
 
                 break;
             }
@@ -376,7 +347,7 @@ void check_range_vector(AST *node)
             {
                 printf("\nSemantic Error! Vector out of range!\n");
                 SemanticErrors++;
-                // (9);
+                //exit(9);
 
                 break;
             }
@@ -404,7 +375,7 @@ int is_number(AST *node)
     
     else if (node->type == AST_IDEN)
     {
-        if (node->symbol->datatype != DATATYPE_CHAR && node->symbol->datatype != DATATYPE_INT)
+        if (node->son[0]->symbol->datatype != DATATYPE_CHAR && node->son[0]->symbol->datatype != DATATYPE_INT)
         {
             return 0;
         }
@@ -420,14 +391,10 @@ int is_number(AST *node)
 
     else if (node->type == AST_FUNCTION_CALL)
     {
-        
 
         check_numparam(node);
-        
         call_parameters(node);
-       
         check_parameters(node);
-       
 
         return 1;
     }
@@ -482,18 +449,13 @@ int is_boolean(AST *node)
 
 void check_vector_length(AST *node)
 {
-    int length = 0;
 
     if (node->type == AST_VEC_DEC)
     {
-       
-        if(node->son[1]){
-        length = atoi(node->son[1]->symbol->text);
-        }
-        
+        int length = atoi(node->son[0]->symbol->text);
         if (node->son[2] != 0)
         { //caso em que parametros foram inicializados
-            
+
             int numparam;
             numparam = cont_vector_param(node);
             if (node->son[2] != 0)
@@ -586,26 +548,24 @@ int cont_vector_param(AST *node)
             return cont;
         }
     }
-    return 0;
 }
 
 void check_numparam(AST *node)
 {
-    int aux;
+
     //logica: toda vez que uma funcao é declarada é guardada uma posicao no vetor de nome de funcoes e outra no numero de parametros
     //serao usadas na comparacao aqui em baixo, ambas sao a mesma posicao
 
     for (int i = 0; i < MAX_FUNCTIONS; i++)
     {
-        if (functions_name[i] == node->son[0]->symbol->text)
+        if (functions_name[i] == node->son[0]->son[0]->symbol->text)
         {
-            aux = *nparam[i];
-            if (aux  != count_numparam(node))
+            if (nparam[i]  != count_numparam(node))
             {
-                printf("\nnparam_decl:%d\tcount_num_call:%d\n",aux,count_numparam(node));
-                printf("\n\nSEMANTIC ERROR! number of parameters of function declaration:%d and call:%d are different\n\n",aux,count_numparam(node));
+                printf("\nnparam_decl:%d\tcount_num_call:%d\n",nparam[i],count_numparam(node));
+                printf("\n\nSEMANTIC ERROR! number of parameters of function declaration:%d and call:%d are different\n\n",nparam[i],count_numparam(node));
                 SemanticErrors++;
-                // (7);
+                //exit(7);
             }
         }
     }
@@ -711,12 +671,12 @@ void check_parameters(AST *node)
         switch(parameters_type[i]){
         case AST_INT:
         case AST_CHAR:{if((call_parameters_type[i]!=DATATYPE_INT) && (call_parameters_type[i]!=DATATYPE_CHAR) ){
-            printf("\nSemantic Error! Parameters call (%d) and declaration with different type (INT)\n",call_parameters_type[i]);// (7);
+            printf("\nSemantic Error! Parameters call (%d) and declaration with different type (INT)\n",call_parameters_type[i]);//exit(7);
         }
         break;}
         case AST_FLOAT:{
         if(call_parameters_type[i]!=DATATYPE_INT){
-            printf("\nSemantic Error! Parameters call and declaration with different type (FLOAT)\n");// (7);
+            printf("\nSemantic Error! Parameters call and declaration with different type (FLOAT)\n");//exit(7);
         }
         break;
         }
@@ -737,8 +697,8 @@ int count_numparam(AST *node)
     if (node->type == AST_FUNC) //caso da declaração
     {
 
-        //// (0);
-        int func_datatype = node->symbol->datatype;
+        ////exit(0);
+        int func_datatype = node->son[0]->symbol->datatype;
 
         if (node->son[3] == 0 && node->son[2] == 0)
         {
@@ -811,9 +771,7 @@ int count_numparam(AST *node)
             }
             return cont;
         }
-        return 0;
     }
-    return 0;
 }
 
 void check_vectorparam_nature(AST *node)
@@ -829,7 +787,7 @@ void check_vectorparam_nature(AST *node)
             if (node->son[2]->son[0]->type != AST_SYMBOL_INT)
             {
                 printf("\n\naqui Vector param and nature(int) are not equal\n\n");
-                // (7);
+                //exit(7);
                 break;
             }
             aux = node->son[2]->son[1];
@@ -839,7 +797,7 @@ void check_vectorparam_nature(AST *node)
                 if (aux->son[0]->type != AST_SYMBOL_INT)
                 {
                     printf("\n\nVector param and nature(int) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
 
@@ -853,7 +811,7 @@ void check_vectorparam_nature(AST *node)
             if (node->son[2]->son[0]->type != AST_SYMBOL_INT)
             {
                 printf("\n\nVector param and nature(float) are not equal\n\n");
-                // (7);
+                //exit(7);
                 break;
             }
             aux = node->son[2]->son[1];
@@ -863,7 +821,7 @@ void check_vectorparam_nature(AST *node)
                 if (aux->son[0]->type != AST_SYMBOL_INT)
                 {
                     printf("\n\nVector param and nature(float) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
 
@@ -877,7 +835,7 @@ void check_vectorparam_nature(AST *node)
             if (node->son[2]->son[0]->type != AST_SYMBOL_CHAR)
             {
                 printf("\n\nVector param and nature(char) are not equal\n\n");
-                // (7);
+                //exit(7);
                 break;
             }
             aux = node->son[2]->son[1];
@@ -887,7 +845,7 @@ void check_vectorparam_nature(AST *node)
                 if (aux->son[0]->type != AST_SYMBOL_CHAR)
                 {
                     printf("\n\nVector param and nature(char) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
 
@@ -910,7 +868,7 @@ void check_vectorparam_nature(AST *node)
                 if (node->son[3]->son[0]->type != AST_SYMBOL_INT)
                 {
                     printf("\n\naqui Vector RANGE param and nature(int) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
                 aux = node->son[3]->son[1];
@@ -920,7 +878,7 @@ void check_vectorparam_nature(AST *node)
                     if (aux->son[0]->type != AST_SYMBOL_INT)
                     {
                         printf("\n\nVector RANGE param and nature(int) are not equal\n\n");
-                        // (7);
+                        //exit(7);
                         break;
                     }
 
@@ -934,7 +892,7 @@ void check_vectorparam_nature(AST *node)
                 if (node->son[3]->son[0]->type != AST_SYMBOL_INT)
                 {
                     printf("\n\nVector RANGE param and nature(float) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
                 aux = node->son[3]->son[1];
@@ -944,7 +902,7 @@ void check_vectorparam_nature(AST *node)
                     if (aux->son[0]->type != AST_SYMBOL_INT)
                     {
                         printf("\n\nVector RANGE param and nature(float) are not equal\n\n");
-                        // (7);
+                        //exit(7);
                         break;
                     }
 
@@ -958,7 +916,7 @@ void check_vectorparam_nature(AST *node)
                 if (node->son[3]->son[0]->type != AST_SYMBOL_CHAR)
                 {
                     printf("\n\nVector RANGE param and nature(char) are not equal\n\n");
-                    // (7);
+                    //exit(7);
                     break;
                 }
                 aux = node->son[3]->son[1];
@@ -968,7 +926,7 @@ void check_vectorparam_nature(AST *node)
                     if (aux->son[0]->type != AST_SYMBOL_CHAR)
                     {
                         printf("\n\nVector RANGE param and nature(char) are not equal\n\n");
-                        // (7);
+                        //exit(7);
                         break;
                     }
 
@@ -991,7 +949,7 @@ void check_dec_var_nature(AST *node)
         {
             printf("\nSemantic Error! Variable nature and datatype(char) are different\n");
             SemanticErrors++;
-            // (5);
+            //exit(5);
         }
         break;
     case AST_INT:
@@ -999,7 +957,7 @@ void check_dec_var_nature(AST *node)
         {
             printf("Semantic Error! Variable nature and datatype(int) are different");
             SemanticErrors++;
-            // (5);
+            //exit(5);
         }
         break;
     case AST_FLOAT:
@@ -1007,7 +965,7 @@ void check_dec_var_nature(AST *node)
         {
             printf("Semantic Error! Variable nature and datatype are different");
             SemanticErrors++;
-            // (5);
+            //exit(5);
         }
         break;
     }
@@ -1033,7 +991,7 @@ void check_commands(AST *node)
         
        
         
-         if (node->symbol->datatype == DATATYPE_CHAR || node->symbol->datatype == DATATYPE_INT)
+         if (node->son[0]->symbol->datatype == DATATYPE_CHAR || node->son[0]->symbol->datatype == DATATYPE_INT)
         {
            
         
@@ -1043,12 +1001,11 @@ void check_commands(AST *node)
             
             return;
         }
-        
 
         else
         {
             
-            
+
             for (int i = 1; i < MAX_SONS; i++)
             {
                 
@@ -1059,13 +1016,12 @@ void check_commands(AST *node)
                     
                     if (!is_number(node->son[i]))
                     {
-                       
                         
                         
                         printf("\nSemantic Error! ATTRIBUTE WITH INCORRET OPERAND!\n");
                         SemanticErrors++;
                         return;
-                        // (8);
+                        //exit(8);
                     }
                 }
             }
@@ -1079,7 +1035,7 @@ void check_commands(AST *node)
 
     case (AST_VEC_ATTR):
     {
-        if (node->symbol->datatype == DATATYPE_CHAR || node->symbol->datatype == DATATYPE_INT)
+        if (node->son[0]->symbol->datatype == DATATYPE_CHAR || node->son[0]->symbol->datatype == DATATYPE_INT)
         {
         if (node->son[0]->type == AST_SYMBOL_CHAR || node->son[0]->type == AST_SYMBOL_INT)
         {
@@ -1098,12 +1054,12 @@ void check_commands(AST *node)
                         printf("\nSemantic Error! ATTRIBUTE WITH INCORRET OPERAND!\n");
                         SemanticErrors++;
                         return;
-                        // (8);
+                        //exit(8);
                     }
                 }
             }
 
-        if (node->symbol->datatype == DATATYPE_INT || node->symbol->datatype == DATATYPE_CHAR)
+        if (node->son[0]->symbol->datatype == DATATYPE_INT || node->son[0]->symbol->datatype == DATATYPE_CHAR)
         {
 
             if (node->son[2]->type == AST_ADD || node->son[2]->type == AST_SUB || node->son[2]->type == AST_MUL || node->son[2]->type == AST_DIV || node->son[2]->type == AST_AND || node->son[2]->type == AST_OR || node->son[2]->type == AST_VEC_SYMBOL || node->son[2]->type == AST_FUNCTION_CALL)
@@ -1116,7 +1072,7 @@ void check_commands(AST *node)
             {
                 printf("\nSemantic Error!! datatype and attribute are from different types\n");
                 SemanticErrors++;
-                // (9);
+                //exit(9);
             }
         }
 
@@ -1136,7 +1092,7 @@ void check_commands(AST *node)
 
                         SemanticErrors++;
 
-                        // (9);
+                        //exit(9);
 
                         break;
                     }
@@ -1149,7 +1105,7 @@ void check_commands(AST *node)
                         printf("\nSemantic Error! Semantic Error! Vector out of range!\n");
 
                         SemanticErrors++;
-                        // (9);
+                        //exit(9);
 
                         break;
                     }
@@ -1162,7 +1118,7 @@ void check_commands(AST *node)
         {
             printf("\nSemantic Error! Vector size must be an integer\n");
             SemanticErrors++;
-            // (99);
+            //exit(99);
         }
     }
     }
@@ -1194,7 +1150,7 @@ void check_label(AST *node)
     {
         printf("\nSEMANTIC ERROR! Label not identified!");
         SemanticErrors++;
-        // (9);
+        //exit(9);
     }
 
     else
@@ -1208,7 +1164,7 @@ void check_label(AST *node)
                 {
                     printf("\nSemantic Error! Label already referencied\n");
                     SemanticErrors++;
-                    // (7);
+                    //exit(7);
                 }
                 else
                 {
@@ -1236,7 +1192,7 @@ void check_return_nature(AST *node, int func_dataype)
             printf("\nSEMANTIC ERROR! Return cant be an string!\n");
             SemanticErrors++;
             return;
-            // (8);
+            //exit(8);
         }
 
         else if (!is_number(node->son[0]))
@@ -1244,7 +1200,7 @@ void check_return_nature(AST *node, int func_dataype)
             printf("\nSEMANTIC ERROR! Return type is an boolean!!!\n");
             SemanticErrors++;
             return;
-            // (9);
+            //exit(9);
         }
 
         else if (node->son[0]->type == AST_PARENTHESIS)
@@ -1255,7 +1211,7 @@ void check_return_nature(AST *node, int func_dataype)
                 printf("\nSEMANTIC ERROR! Return type cant be an string!\n");
                 SemanticErrors++;
                 return;
-                // (8);
+                //exit(8);
             }
 
             if (node->son[0]->son[3]->type == AST_PARAMETER)
@@ -1263,7 +1219,7 @@ void check_return_nature(AST *node, int func_dataype)
                 printf("\nSEMANTIC ERROR! Return type cant be an string!\n");
                 SemanticErrors++;
                 return;
-                // (8);
+                //exit(8);
             }
 
             else if (node->son[0]->son[3]->type == AST_SYMBOL_CHAR || node->son[0]->son[3]->type == AST_SYMBOL_INT)
@@ -1279,7 +1235,7 @@ void check_return_nature(AST *node, int func_dataype)
                         printf("\naq SEMANTIC ERROR! Return and function type(int) are not equal!\n");
                         SemanticErrors++;
                         return;
-                        // (10);
+                        //exit(10);
                     }
 
                 case DATATYPE_FLOAT:
@@ -1288,7 +1244,7 @@ void check_return_nature(AST *node, int func_dataype)
                         printf("\nSEMANTIC ERROR! Return and function type(float) are not equal!\n");
                         SemanticErrors++;
                         return;
-                        // (10);
+                        //exit(10);
                     }
                     break;
                 }
@@ -1308,7 +1264,7 @@ void check_return_nature(AST *node, int func_dataype)
                             printf("\nSEMANTIC ERROR! Return IDENTIFIER  and function type(int) are not equal!\n");
                             SemanticErrors++;
                             return;
-                            // (10);
+                            //exit(10);
                         }
                         break;
 
@@ -1318,7 +1274,7 @@ void check_return_nature(AST *node, int func_dataype)
                             printf("\nSEMANTIC ERROR! Return IDENTIFIER and function type(float) are not equal!\n");
                             SemanticErrors++;
                             return;
-                            // (10);
+                            //exit(10);
                         }
                         break;
                     }
@@ -1331,7 +1287,7 @@ void check_return_nature(AST *node, int func_dataype)
                 {
                     printf("\nSemantic Error! Return type invalid!\n");
                     SemanticErrors++;
-                    // (8);
+                    //exit(8);
                 }
                 return;
             }
@@ -1351,7 +1307,7 @@ if(node->son[2] == 0){   //caso que é void
     return;
 }
 
-else if(node->son[2] != 0 && node->son[3] == 0){   //caso que tem um parametro
+else if(node->son[2] == 0 || node->son[3] == 0){   //caso que tem um parametro
     declare_parameters2(node->son[1],parameter_function_name);
 
 }
@@ -1364,13 +1320,11 @@ else if (node->son[3] != 0) //caso que tem parameters list
             //printf("\n\nentrou no caso que tem mais de um parametro\n\n");
             
             declare_parameters2(node->son[1],parameter_function_name);
-            
             AST *aux;
             AST *aux_type;
            
             
             declare_parameters2(node->son[2]->son[0],parameter_function_name);
-           
             
             aux = node->son[2]->son[1];
 
@@ -1411,27 +1365,27 @@ else if (node->son[3] != 0) //caso que tem parameters list
 
 
 void declare_parameters2(AST *node,char *parameter_function_name){
-    if ((node->symbol->type != SYMBOL_IDENTIFIER) && (node->symbol->type != SYMBOL_OUT_OF_SCOPE))
+    if ((node->son[1]->symbol->type != SYMBOL_IDENTIFIER) && (node->son[1]->symbol->type != SYMBOL_OUT_OF_SCOPE))
             {
                 fprintf(stderr, "Semantic ERROR: identifier %s already declared\n",
-                        node->symbol->text);
+                        node->son[1]->symbol->text);
                 ++SemanticErrors;
             }
 
-            node->symbol->type = SYMBOL_PARAMETER;
+            node->son[1]->symbol->type = SYMBOL_PARAMETER;
             //param_names[pid] = node->son[1]->symbol->text;
             //pid++;
 
             if (node->son[0])
             {
                 if (node->son[0]->type == AST_CHAR)
-                    node->symbol->datatype = DATATYPE_CHAR;
+                    node->son[1]->symbol->datatype = DATATYPE_CHAR;
                 else if (node->son[0]->type == AST_INT)
-                    node->symbol->datatype = DATATYPE_INT;
+                    node->son[1]->symbol->datatype = DATATYPE_INT;
                 else if (node->son[0]->type == AST_FLOAT)
-                    node->symbol->datatype = DATATYPE_FLOAT;
+                    node->son[1]->symbol->datatype = DATATYPE_FLOAT;
             }
-            node->symbol->parameter_function_name = parameter_function_name;
+            node->son[1]->symbol->parameter_function_name = parameter_function_name;
             return;
 }
 

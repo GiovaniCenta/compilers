@@ -3,6 +3,7 @@
     #include "hash.h"
     #include "ast.h"
     #include "semantic.h"
+  
     #include <stdlib.h>
     int yyerror();
     int getLineNumber();
@@ -63,7 +64,7 @@
 %type<ast> literal_withstring
 %type<ast> literal
 %type<ast> type
-%type<ast> identifier
+%type<symbol> identifier
 %type<ast> functioncall
 %type<ast> decl_block 
 
@@ -85,12 +86,20 @@
 %%
 
 program: data_decl { $$ = $1;  mainAST = $$;
-                
+               
+               
                 check_and_set_declarations($1);
+                             
                 
                 check_undeclared();
+                
                 check_operands($1);
+                
                 check_commands($1);
+                
+                
+                
+            
                 
                 
                 
@@ -116,15 +125,15 @@ cmd_list:
 
 
 cmd:
-    identifier '=' expression       { $$ = astCreate(AST_ATTR,0,$1,$3,0,0); }
-    |identifier '[' expression ']' '=' expression      { $$ = astCreate(AST_VEC_ATTR,0,$1,$3,$6,0); }
+    identifier '=' expression       { $$ = astCreate(AST_ATTR,$1,0,$3,0,0); }
+    |identifier '[' expression ']' '=' expression      { $$ = astCreate(AST_VEC_ATTR,$1,0,$3,$6,0); }
     |KW_PRINT expression_list                       { $$ = astCreate(AST_PRINT,0,$2,0,0,0); }
     |KW_RETURN expression                           { $$ = astCreate(AST_RETURN,0,$2,0,0,0); }
     |KW_COMEFROM ':' expression       { $$ = astCreate(AST_COMEFROM,0,$3,0,0,0); }
     |flow_control                                    { $$ = astCreate(AST_FLOW_CONTROL,0,$1,0,0,0); }
     |block                                           { $$ = $1; }
-    |identifier literal                         { $$ = astCreate(AST_LABEL_LIT,0,$1,$2,0,0); }
-    |identifier  { $$ = astCreate(AST_LABEL,0,$1,0,0,0); }
+    |identifier literal                         { $$ = astCreate(AST_LABEL_LIT,$1,0,$2,0,0); }
+    |identifier  { $$ = astCreate(AST_LABEL,$1,0,0,0,0); }
     ;
 
 
@@ -142,8 +151,8 @@ block: '{' cmd_list '}' { $$ = astCreate(AST_BLOCK,0,$2,0,0,0); }
 
 
 expression:
-    identifier  { $$ = astCreate(AST_IDEN,0,$1,0,0,0); }
-    | identifier '[' expression ']'     { $$ = astCreate(AST_VEC_SYMBOL,0,$1,$3,0,0); }
+    identifier  { $$ = astCreate(AST_IDEN,$1,0,0,0,0); }
+    | identifier '[' expression ']'     { $$ = astCreate(AST_VEC_SYMBOL,$1,0,$3,0,0); }
     | expression '+' expression     { $$ = astCreate(AST_ADD,0,$1,$3,0,0); }
     | expression '-' expression     { $$ = astCreate(AST_SUB,0,$1,$3,0,0); }
     | expression '*' expression     { $$ = astCreate(AST_MUL,0,$1,$3,0,0); }
@@ -158,7 +167,7 @@ expression:
     | expression OPERATOR_GE expression         { $$ = astCreate(AST_GE,0,$1,$3,0,0); }
     | expression OPERATOR_EQ expression         { $$ = astCreate(AST_EQ,0,$1,$3,0,0); }
     | expression OPERATOR_DIF expression        { $$ = astCreate(AST_DIF,0,$1,$3,0,0); }
-    |identifier literal                     { $$ = astCreate(AST_IDENLIT,0,$1,$2,0,0); }
+    |identifier literal                     { $$ = astCreate(AST_IDENLIT,$1,0,$2,0,0); }
     |KW_READ                                { $$ = astCreate(AST_READ,0,0,0,0,0); }
     |functioncall                              { $$ = astCreate(AST_FUNCTION_CALL,0,$1,0,0,0); }
     |LIT_CHAR            { $$ = astCreate(AST_SYMBOL_CHAR,$1,0,0,0,0); }
@@ -173,9 +182,9 @@ expression_list:
 
 
 functioncall:
-    identifier '(' parameter parameterslist ')'     { $$ = astCreate(AST_FUNCTION_CALL,0,$1,$3,$4,0); }
-    |identifier '(' ')'                             { $$ = astCreate(AST_FUNCTION_CALL,0,$1,0,0,0); }
-    |identifier '(' parameter ')'     { $$ = astCreate(AST_FUNCTION_CALL,0,$1,$3,0,0); }
+    identifier '(' parameter parameterslist ')'     { $$ = astCreate(AST_FUNCTION_CALL,$1,0,$3,$4,0); }
+    |identifier '(' ')'                             { $$ = astCreate(AST_FUNCTION_CALL,$1,0,0,0,0); }
+    |identifier '(' parameter ')'     { $$ = astCreate(AST_FUNCTION_CALL,$1,0,$3,0,0); }
     ;
 
 parameterslist: ',' parameter parameterslist                 { $$ = astCreate(AST_PARAMETER_LIST,0,$2,$3,0,0); }
@@ -183,7 +192,7 @@ parameterslist: ',' parameter parameterslist                 { $$ = astCreate(AS
     ;
 
 
-parameter: identifier      { $$ = astCreate(AST_PARAMETER,0,$1,0,0,0); }
+parameter: identifier      { $$ = astCreate(AST_PARAMETER,$1,0,0,0,0); }
     |literal_withstring     { $$ = astCreate(AST_PARAMETER,0,$1,0,0,0); }
     ;
 
@@ -195,9 +204,9 @@ functionlist:
 
 
 function:
-    type ':' identifier '(' parameter_init parameterslist_init ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$5,$6,$8); }
-	|type ':' identifier '(' ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$6,0,0); }
-    |type ':' identifier '(' parameter_init ')' block    { $$ = astCreate(AST_FUNC,$1,$3,$5,$7,0); }
+    type ':' identifier '(' parameter_init parameterslist_init ')' block    { $$ = astCreate(AST_FUNC,$3,$1,$5,$6,$8); }
+	|type ':' identifier '(' ')' block    { $$ = astCreate(AST_FUNC,$3,$1,$6,0,0); }
+    |type ':' identifier '(' parameter_init ')' block    { $$ = astCreate(AST_FUNC,$3,$1,$5,$7,0); }
     ;
 
 
@@ -207,7 +216,7 @@ parameterslist_init: ',' parameter_init parameterslist_init                 { $$
 
 
 parameter_init:
-    type ':' identifier      { $$ = astCreate(AST_PARAMETER,0,$1,$3,0,0); }
+    type ':' identifier      { $$ = astCreate(AST_PARAMETER,$3,$1,0,0,0); }
     ;
 
 
@@ -220,11 +229,11 @@ declist:
 
 
 dec:
-	type ':' identifier '=' literal     { $$ = astCreate(AST_VAR_DEC,0,$1,$3,$5,0); }
-    | type '[' literal ']' ':' identifier '=' litlist { $$ = astCreate(AST_VEC_DEC,$1,$3,$6,$8,0); }
-    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier '=' litlist   { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,$10); }
-    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier        { $$ = astCreate(AST_VEC_DEC_RANGE,$1,$3,$5,$8,0); }
-    | type '[' literal ']' ':' identifier   { $$ = astCreate(AST_VEC_DEC,$1,$3,$6,0,0);}
+	type ':' identifier '=' literal     { $$ = astCreate(AST_VAR_DEC,$3,$1,0,$5,0); }
+    | type '[' literal ']' ':' identifier '=' litlist { $$ = astCreate(AST_VEC_DEC,$6,$1,$3,$8,0); }
+    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier '=' litlist   { $$ = astCreate(AST_VEC_DEC_RANGE,$8,$1,$5,$3,$10); }
+    | type '[' range_values OPERATOR_RANGE range_values ']' ':' identifier        { $$ = astCreate(AST_VEC_DEC_RANGE,$8,$1,$5,$3,0); }
+    | type '[' literal ']' ':' identifier   { $$ = astCreate(AST_VEC_DEC,$6,$1,$3,0,0);}
     | {$$=0;}
     ;
 
@@ -250,7 +259,9 @@ literal:
     ;
 
 identifier:
-    TK_IDENTIFIER       { $$ = astCreate(AST_SYMBOL,$1,0,0,0,0); }
+    TK_IDENTIFIER       {$$=$1;}
+
+
     ;
 
 type:
@@ -263,5 +274,5 @@ type:
 %%
 int yyerror() {
     fprintf(stderr, "Syntax error at line %d \n", getLineNumber());
-    exit(3);
+     (3);
 }

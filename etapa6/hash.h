@@ -57,6 +57,7 @@ void print_asm(FILE *fout);
 
  void str_treatment(char* str_in);
  int string_already(char *str);
+ int search_already(char *str);
 
 #endif
 // END

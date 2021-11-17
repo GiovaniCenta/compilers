@@ -41,9 +41,12 @@
 #define TAC_COMEFROM 28
 
 
-
-#define TAC_MOVE 42
 #define TAC_MOVE_VECTOR 43
+#define TAC_MOVE 42
+#define TAC_DECL_VECTOR 44
+#define TAC_PARAMETER_LIST 46
+
+#define TAC_IF 47
 
 typedef struct tac_node{
     int type;
@@ -67,6 +70,7 @@ TAC* create_tac_bin_op(int tac_type, TAC* son1, TAC* son2);
 
 // CODE GENERATION
 TAC* generate_code(AST* node);
+TAC* tac_reverse(TAC* tac);
 
 
 #endif

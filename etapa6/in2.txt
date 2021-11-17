@@ -1,29 +1,22 @@
-## UFRGS - Compiladores - Marcelo Johann - 2021/1
-data {
-
-
-
-
-int: ameixa = 10;
-
-
-
-
-
-
-}
-
-int:pastelzinho(){
-  ameixa = ameixa + 25;
-  print(ameixa);
+data{
+int:y=0;
+int:k=15;
+int[15]:vetor;
+int[12]:vetor3;
+int[5]:vetor2 = 5 5 5 5 5;
 }
 
 
 
 
-int: main(){
-  ameixa = pastelzinho();
+int:main(){
+    k = function(1,2,3);
+    k = 10 + 5;
+    return (5);
 
- 
- 
 }
+
+int:function(int:p1,int:p2,int:p3){
+    y=15;
+}
+

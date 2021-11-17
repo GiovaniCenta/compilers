@@ -11,7 +11,7 @@ void getType(int Type_id, char* type){
         case AST_INT: strcpy(type, "int"); break;
         case AST_FLOAT: strcpy(type, "float"); break;
         case AST_CHAR: strcpy(type, "char"); break;
-        default: fprintf(stderr, "\nType not found: %d", type); exit(10); break;
+        default: fprintf(stderr, "\nType not found: %d", type);  (10); break;
     }
     return;
 }
@@ -90,7 +90,7 @@ void switchDecompilation(AST* node){
         case AST_READ: decompileRead(node); break;
         case AST_RETURN: decompileReturn(node); break;
         case AST_FUNCTION_CALL: decompileFooCall(node); break;
-        default: fprintf(stderr, "Error! Unknown node type!\n"); exit(1); break;
+        default: fprintf(stderr, "Error! Unknown node type!\n");  (1); break;
     }
     return;
 }
