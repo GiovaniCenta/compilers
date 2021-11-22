@@ -20,3 +20,4 @@ void asm_aritm_operation_logical(TAC *tac, char *instruction);
 void asm_not(TAC *tac);
 
 int is_function(char *functionName);
+int is_vector(char *vectorName);

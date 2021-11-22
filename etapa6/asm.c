@@ -2,12 +2,15 @@
 #include "asm.h"
 #include <string.h>
 
-
 struct Node *functionNameList = NULL;
-extern struct Node* head;
+extern struct Node *head;
 char *arraydefuncoes[100];
 int funcoes_index = 0;
 
+char *vectorsNames[100];
+int vectorCount = 0;
+
+char *vec_name;
 
 int cont_param_1 = 0;
 char *regsparameters[5] = {"esi", "edi", "edx", "ecx", "eax"};
@@ -22,7 +25,7 @@ void generate_asm(TAC *first)
 
     //TAC *tac;
     fout = fopen("out.s", "w");
-    
+
     //init
     fprintf(fout, ".printintstr: .string \"%%d\"\n"
                   ".printfloatstr: .string \"%%f\"\n"
@@ -41,8 +44,11 @@ void generate_asm(TAC *first)
 
         case TAC_DECL_VECTOR:
         {
+
             int valor = atoi(tac->op1->text);
+
             fprintf(fout, "\t.comm	%s,%d,16\n", tac->res->text, 4 * valor);
+
             break;
         }
 
@@ -80,6 +86,9 @@ void generate_asm(TAC *first)
             {
                 fprintf(fout, "\t call _%s \n", tac->op1->text);
                 fprintf(fout, "\tmovl	%%eax,_%s_Return(%%rip)\n", tac->op1->text);
+                if(tac->res)
+        fprintf(fout, "## TAC_FUNCTION_CALL \n \tmovl	%%eax,_%s_Return(%%rip)\n \tmovl _%s_Return(%%rip), %%eax\n \tmovl %%eax,_%s(%%rip)\n ", tac->op1->text,tac->op1->text,tac->res->text);
+        break;
             }
 
             break;
@@ -155,6 +164,9 @@ void generate_asm(TAC *first)
         case TAC_GRE:
             asm_aritm_operation_logical(tac, "setg");
             break;
+
+        
+        
         case TAC_LES:
             asm_aritm_operation_logical(tac, "setl");
             break;
@@ -163,13 +175,21 @@ void generate_asm(TAC *first)
             break;
 
         case TAC_RET:
+       
             fprintf(fout, "\t##TAC_RET\n");
+            
+            if(tac->op1){
             fprintf(fout, "\tmovl	_%s(%%rip), %%eax\n", tac->op1->text);
+            }
+            else if(tac->res){
+                fprintf(fout, "\tmovl	_%s(%%rip), %%eax\n", tac->res->text);
+            }
+            
+            
         }
     }
 
-    print_asm(fout);//hash table
-    
+    print_asm(fout); //hash table
 
     fclose(fout);
 }
@@ -184,9 +204,9 @@ void asm_beginfun(TAC *tac)
                   "\tmovq	%%rsp, %%rbp\n\n",
 
             tac->res->text, tac->res->text);
+
     arraydefuncoes[funcoes_index] = tac->res->text;
     funcoes_index++;
-
 }
 
 void asm_endfun()
@@ -198,28 +218,61 @@ void asm_endfun()
 
 void asm_print(TAC *tac)
 {
+    
 
+    if(tac->res){
     if (tac->res->type == SYMBOL_LIT_STRING)
     {
-        
-                        
 
         char str[50] = "str";
         char output[50];
-        strcpy(output,tac->res->text);
+        strcpy(output, tac->res->text);
         str_treatment(output);
+
+        fprintf(fout, "## TAC_PRINT_STRING\n");
+        fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
+                      "\tmovl	$0, %%eax\n"
+                      "\tcall	printf@PLT\n"
+                      "\tmovl	$0, %%eax\n",
+                output);
+        m++;
+        return;
+    }
+    
+    
         
-      
-            fprintf(fout, "## TAC_PRINT_STRING\n");
-            fprintf(fout, "\tleaq	_%s(%%rip), %%rdi\n"
+       
+        char buffer[50];
+        
+        strcpy(buffer, str_treatment_vector_lenght(tac->res->text));
+        //printf("\nbuffer:%s",buffer);
+        
+        //vec_name = str_treatment_vector_lenght(tac->res->text);
+       // printf("\nvec_lenght:%s\n", buffer);
+        
+
+        str_treatment_vector(tac->res->text);
+        
+        //printf("\nvec_name:%s\n", tac->res->text);
+        
+
+        if (is_vector(tac->res->text) == 1)
+        {
+            //printf("\nentrou aqui vetor print");
+            int valor = atoi(buffer);
+
+            fprintf(fout, "## TAC_PRINT VECTOR\n"
+                          "\tmovl	%d+_%s(%%rip), %%esi\n"
+                          "\tleaq	.printintstr(%%rip), %%rdi\n"
                           "\tmovl	$0, %%eax\n"
                           "\tcall	printf@PLT\n"
                           "\tmovl	$0, %%eax\n",
-                    output);
-            m++;
-    }
-    else
-    {
+                    4 * valor,
+                    tac->res->text);
+            return;
+        }
+        else{
+        
         fprintf(fout, "## TAC_PRINT\n"
                       "\tmovl	_%s(%%rip), %%esi\n"
                       "\tleaq	.printintstr(%%rip), %%rdi\n"
@@ -227,6 +280,8 @@ void asm_print(TAC *tac)
                       "\tcall	printf@PLT\n"
                       "\tmovl	$0, %%eax\n",
                 tac->res->text);
+        }
+    
     }
 }
 
@@ -240,13 +295,20 @@ TAC *asm_var_declar(TAC *first)
                   "\tpushq	%%rbp\n"
                   "\tmovq	%%rsp, %%rbp\n\n");
 
-    while (tac->type == TAC_MOVE)
+    while (tac->type == TAC_DECL_VAR || tac->type == TAC_DECL_VECTOR)
     {
 
         if (tac)
         {
+
             asm_move(tac);
             tac = tac->next;
+            if (tac->type == TAC_DECL_VECTOR)
+            {
+
+                vectorsNames[vectorCount] = tac->res->text;
+                vectorCount++;
+            }
         }
     }
     fprintf(fout, "\tcall\t_main\n");
@@ -261,14 +323,16 @@ void asm_move(TAC *tac)
 
     if (!is_function(tac->op1->text))
     {
+
         if (tac->op2)
         { //ITS A VECTOR
 
             //int output;
             //sprintf(output, "4*%s",tac->op1->text);
+
             int valor = atoi(tac->op1->text);
             fprintf(fout, "## TAC_MOVE_VECTOR\n"
-                          "\tmovl	$%s, %d+%s(%%rip)\n"
+                          "\tmovl	$%s, %d+_%s(%%rip)\n"
                           "\tmovl	$0, %%eax\n",
                     tac->op2->text,
                     4 * valor,
@@ -279,6 +343,7 @@ void asm_move(TAC *tac)
 
         else if (tac->op1->text)
         {
+
             fprintf(fout, "## TAC_MOVE\n");
             fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
                           "\tmovl\t%%eax, _%s(%%rip)\n",
@@ -288,6 +353,7 @@ void asm_move(TAC *tac)
     else
     {
         fprintf(fout, "## TAC_FUNCTION_CALL\n");
+        //fprintf(fout, "\tmovl	%%eax,_%s(%%rip)\n \tmovl _%s(%%rip), %%eax\n \tmovl %%eax,_%s(%%rip)\n ", tac->op1->text,tac->op1->text,tac->op2->text);
         fprintf(fout, "\tmovl	%%eax, _%s(%%rip)\n", tac->res->text);
     }
 }
@@ -296,96 +362,164 @@ void asm_aritm_operation_edx_eax(TAC *tac, char *instruction)
 
     if (is_function(tac->op2->text) == 1 || is_function(tac->op1->text) == 1)
     {
-        fprintf(fout,"## OPERATION WITH FUNCTION CALL EDX EAX\n");
+        fprintf(fout, "## OPERATION WITH FUNCTION CALL EDX EAX\n");
         fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
                       "\tmovl\t_%s(%%rip), %%edx\n"
                       "\t%s\t%%edx, %%eax\n"
                       "\tmovl\t%%eax, _%s(%%rip)\n",
                 tac->op1->text, tac->op2->text,
                 instruction, tac->res->text);
+        return;
     }
 
-    else
+    char buffer[50],buffer2[50];
+    strcpy(buffer, str_treatment_vector_lenght(tac->op1->text));
+    strcpy(buffer2, str_treatment_vector_lenght(tac->op2->text));
+    //vec_name = str_treatment_vector_lenght(tac->res->text);
+    //printf("\nvec_lenght:%s", buffer);
+    //printf("\nvec_lenght:%s\n", buffer2);
+   
+
+    str_treatment_vector(tac->op1->text);
+     str_treatment_vector(tac->op2->text);
+    //printf("\nvec_name:%s\n", tac->op1->text);
+   // printf("\nvec_name:%s\n", tac->op2->text);
+     
+
+    if (is_vector(tac->op1->text) == 1)
     {
-        fprintf(fout,"## OPERATION EDX EAX\n");
-        fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
-                      "\tmovl\t_%s(%%rip), %%eax\n"
-                      "\t%s\t%%edx, %%eax\n"
-                      "\tmovl\t%%eax, _%s(%%rip)\n",
-                tac->op1->text, tac->op2->text,
-                instruction, tac->res->text);
+        //printf("entrou aqui");
+        int valor = atoi(buffer);
+         fprintf(fout, "## OPERATION EDX EAX WITH VECTOR OP1\n");
+            fprintf(fout, "\tmovl\t%d+_%s(%%rip), %%edx\n"
+                          "\tmovl\t_%s(%%rip), %%eax\n"
+                          "\t%s\t%%edx, %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",valor*4,
+                    tac->op1->text, tac->op2->text,
+                    instruction, tac->res->text);
+        return;
     }
-}
 
-void asm_aritm_operation_eax_edx(TAC *tac, char *instruction)
-{
-     if (is_function(tac->op2->text) == 1 || is_function(tac->op1->text) == 1)
+    else if (is_vector(tac->op2->text) == 1)
     {
-        fprintf(fout,"## OPERATION WITH FUNCTION CALL EAX EDX\n");
-        fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
-                      "\tmovl\t_%s(%%rip), %%edx\n"
-                      "\t%s\t%%edx, %%eax\n"
-                      "\tmovl\t%%eax, _%s(%%rip)\n",
-                tac->op1->text, tac->op2->text,
-                instruction, tac->res->text);
+        //printf("entrou aqui");
+        int valor = atoi(buffer2);
+         fprintf(fout, "## OPERATION EDX EAX WITH VECTOR OP2\n");
+            fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
+                          "\tmovl\t%d+_%s(%%rip), %%eax\n"
+                          "\t%s\t%%edx, %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",tac->op1->text,valor*4,
+                    tac->op2->text,
+                    instruction, tac->res->text);
+        return;
     }
 
-    else
-    {
-        fprintf(fout,"## OPERATION EAX EDX\n");
-        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                      "\tmovl\t_%s(%%rip), %%edx\n"
-                      "\t%s\t%%edx, %%eax\n"
-                      "\tmovl\t%%eax, _%s(%%rip)\n",
-                tac->op1->text, tac->op2->text,
-                instruction, tac->res->text);
-    }
-}
-
-void asm_div(TAC *tac)
-{
-    fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                  "\tmovl\t_%s(%%rip), %%ecx\n"
-                  "\tcltd\n"
-                  "\tidivl\t%%ecx\n"
-                  "\tmovl\t%%eax, _%s(%%rip)\n",
-            tac->op1->text, tac->op2->text,
-            tac->res->text);
-}
-
-void asm_aritm_operation_logical(TAC *tac, char *instruction)
-{
-    fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
-                  "\tmovl\t_%s(%%rip), %%eax\n"
-                  "\tcmpl\t%%eax, %%edx\n"
-                  "\t%s\t%%al\n"
-                  "\tmovzbl\t%%al, %%eax\n"
-                  "\tmovl\t%%eax, _%s(%%rip)\n",
-            tac->op1->text, tac->op2->text,
-            instruction, tac->res->text);
-}
-
-void asm_not(TAC *tac)
-{
-    fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
-                  "\ttestl\t%%eax, %%eax\n"
-                  "\tsete\t%%al\n"
-                  "\tmovzb\t%%al, %%eax\n"
-                  "\tmovl\t%%eax, _%s(%%rip)\n",
-            tac->op1->text, tac->res->text);
-}
-
-
-int is_function(char *functionName){
-    char buffer[256];
-    sprintf(buffer,"_%s",functionName);
-    for(int i=0;i<100;i++){
-        //printf("\n\tbuffer:%s\tarraydefuncoes[%d]:%s\n",functionName,i,arraydefuncoes[i]);
-        if(arraydefuncoes[i] == functionName){
-        
-            
-            return 1;
+        else
+        {
+            fprintf(fout, "## OPERATION EDX EAX\n");
+            fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
+                          "\tmovl\t_%s(%%rip), %%eax\n"
+                          "\t%s\t%%edx, %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",
+                    tac->op1->text, tac->op2->text,
+                    instruction, tac->res->text);
+            return;
         }
     }
-    return 0;
-}
+
+    void asm_aritm_operation_eax_edx(TAC * tac, char *instruction)
+    {
+        if (is_function(tac->op2->text) == 1 || is_function(tac->op1->text) == 1)
+        {
+            fprintf(fout, "## OPERATION WITH FUNCTION CALL EAX EDX\n");
+            fprintf(fout, "\tmovl\t_%s_Return(%%rip), %%eax\n"
+                          "\tmovl\t_%s(%%rip), %%edx\n"
+                          "\t%s\t%%edx, %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",
+                    tac->op1->text, tac->op2->text,
+                    instruction, tac->res->text);
+        }
+
+        else
+        {
+            fprintf(fout, "## OPERATION EAX EDX\n");
+            fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                          "\tmovl\t_%s(%%rip), %%edx\n"
+                          "\t%s\t%%edx, %%eax\n"
+                          "\tmovl\t%%eax, _%s(%%rip)\n",
+                    tac->op1->text, tac->op2->text,
+                    instruction, tac->res->text);
+        }
+    }
+
+    void asm_div(TAC * tac)
+    {
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\tmovl\t_%s(%%rip), %%ecx\n"
+                      "\tcltd\n"
+                      "\tidivl\t%%ecx\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                tac->res->text);
+    }
+
+    void asm_aritm_operation_logical(TAC * tac, char *instruction)
+    {
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%edx\n"
+                      "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\tcmpl\t%%eax, %%edx\n"
+                      "\t%s\t%%al\n"
+                      "\tmovzbl\t%%al, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->op2->text,
+                instruction, tac->res->text);
+    }
+
+    void asm_not(TAC * tac)
+    {
+        fprintf(fout, "\tmovl\t_%s(%%rip), %%eax\n"
+                      "\ttestl\t%%eax, %%eax\n"
+                      "\tsete\t%%al\n"
+                      "\tmovzb\t%%al, %%eax\n"
+                      "\tmovl\t%%eax, _%s(%%rip)\n",
+                tac->op1->text, tac->res->text);
+    }
+
+    int is_function(char *functionName)
+    {
+        char buffer[256];
+        sprintf(buffer, "_%s", functionName);
+        for (int i = 0; i < 100; i++)
+        {
+            //printf("\n\tbuffer:%s\tarraydefuncoes[%d]:%s\n",functionName,i,arraydefuncoes[i]);
+            if (arraydefuncoes[i] == functionName)
+            {
+
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    int is_vector(char *vectorName)
+    {
+
+        //char buffer[256];
+
+        //sprintf(buffer, "_%s", vectorName);
+
+        // printf("\nbuffer:%s",buffer);
+        for (int i = 0; i < 100; i++)
+        {
+           // printf("vectorsName[i]:%s \t vectorName:%s\n",vectorsNames[i],vectorName);
+            //printf("\n\tbuffer:%s\tarraydefuncoes[%d]:%s\n",functionName,i,arraydefuncoes[i]);
+            if(vectorsNames[i]){
+            if (strcmp(vectorsNames[i],vectorName)==0)
+            {
+                
+                return 1;
+            }
+            }
+        }
+        return 0;
+    }

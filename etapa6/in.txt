@@ -1,59 +1,44 @@
 data{
-int[5]:vetor;
-int:y=0;
-int:x=100;
-int:i=0;
-int:operacao=0;
+    int:y=15;
+    int:x=10;
+    int:ret=2;
+    int[10]:vetor;
+    int:i=0;
+    char:a='a';
 }
-
-int:function(int:parametro1,int:parametro2,int:parametro3){
-    parametro2 = 200;
-    parametro3 = 500;
-    parametro1 = parametro1 + parametro3 - parametro2;
-    print("valor do p1 eh ");
-    print(parametro1);
-    print("\n");
-    return (parametro1);
-}
-int:main(){
-vetor[2] = 77;
-y=vetor[2];
-print("\n");
-print("o valor de y eh ");
-print(y);
-print("\n");
-print("\n");
-x = function(100,0,0) + 50;
-print("retorno mais 50 eh ");
-print(x);
-print("\n");
-print("oi vou entrar no until");
-print("\n");
-until(i==7){
-    print("valor de i eh ");
-    print(i);
-     print("\n");
-    i=i+1;
+int:function(int:p1,int:p2,int:p3){
+    x = p1 + p2 - p3;
+    print "\n","valor de p1 + p2 - p3 = ",x,"\n";
+    return (x*vetor[2]);
+    }
+char:main(){
+   vetor[5] = 1000;
+   vetor[2] = 2;
+   print("\n");
+  y=vetor[5]+50;
+  print "\n","vetor[5] mais 50 = ",y,"\n";
+  y = function(100,20,30);
+  print "\n","o retorno da function = ",y,"\n"; 
+  until(i==10){
+      i=i+2;
+      print "\n","valor de i = ",i; 
 };
-print("\n");
-print("oi sai do until ");
-operacao = vetor[2] + 50;
-if(operacao>50){
-    print("\n");
-    print("estou dentro do if");
-    print("\n");
+if(x<10){
+    print "\n","entrei no if pq ","valor de i = ",i,"\n";
 }
 else{
-    print("\n");
-    print("estou dentro do else");
-    print("\n");
+    print "\n","entrei no else pq ","valor de i = ",i,"\n";
 };
 
-
-
-
-
-
-
+return (a);
 }
+
+
+
+
+
+
+
+
+
 

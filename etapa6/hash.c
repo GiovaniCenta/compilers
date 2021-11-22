@@ -126,7 +126,7 @@ HASH_NODE *make_label()
     char buffer[256] = "";
 
     sprintf(buffer, "mYLabule_%d", serial++);
-    hashInsert(buffer, SYMBOL_LABEL);
+    return hashInsert(buffer, SYMBOL_LABEL);
 }
 
 void print_asm(FILE *fout)
@@ -243,6 +243,48 @@ void str_treatment(char *str_in)
         if (*read2 != '\"')
             *write2++ = *read2;
     } while (*read2++);
+
+    char *str3 = str_in;
+    char *write3 = str3, *read3 = str3;
+    do
+    {
+        if (*read3 != '[')
+            *write3++ = *read3;
+    } while (*read3++);
+
+    char *str4 = str_in;
+    char *write4 = str4, *read4 = str4;
+    do
+    {
+        if (*read4 != ']')
+            *write4++ = *read4;
+    } while (*read4++);
+
+      char *str5 = str_in;
+    char *write5 = str5, *read5 = str5;
+    do
+    {
+        if (*read5 != '=')
+            *write5++ = *read5;
+    } while (*read5++);
+
+    char *str6 = str_in;
+    char *write6 = str6, *read6 = str6;
+    do
+    {
+        if (*read6 != '+')
+            *write6++ = *read6;
+    } while (*read6++);
+
+     char *str7 = str_in;
+    char *write7 = str7, *read7 = str7;
+    do
+    {
+        if (*read7 != '-')
+            *write7++ = *read7;
+    } while (*read7++);
+
+
     //printf("\nstring dps da remocao de aspas: %s\n", str2);
 }
 
@@ -256,4 +298,62 @@ int search_already(char *str)
         }
     }
     return 0;
+}
+
+char *str_treatment_vector(char *str)
+{
+
+  
+
+    const char separator = '[';
+    char *const sep_at = strchr(str, separator);
+    if (sep_at != NULL)
+    {
+        *sep_at = '\0'; 
+    }
+
+    return str;
+}
+
+char *str_treatment_vector_lenght(char *str)
+{
+
+    const char *PATTERN1 = "[";
+    const char *PATTERN2 = "]";
+
+    char *target = NULL;
+    char *start, *end;
+
+    if (start = strstr(str, PATTERN1))
+    {
+        start += strlen(PATTERN1);
+        if (end = strstr(start, PATTERN2))
+        {
+            target = (char *)malloc(end - start + 1);
+            memcpy(target, start, end - start);
+            target[end - start] = '\0';
+        }
+    }
+
+    if (target)
+    {
+       // printf("target:%s\n", target);
+        return target;
+    }
+
+    return str;
+}
+
+HASH_NODE *hashCreate()
+{
+    HASH_NODE *newnode;
+    int nodeAddress = 0;
+
+    newnode = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
+    newnode->type = 1;
+    newnode->text = (char *)calloc(100 + 1, sizeof(char));
+    strcpy(newnode->text, "0");
+    newnode->next = 0;
+
+    return newnode;
 }

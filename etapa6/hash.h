@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define HASH_SIZE 997
 
@@ -54,10 +55,14 @@ HASH_NODE* make_temp();
 HASH_NODE* make_label();
 void print_asm(FILE *fout);
 
-
+HASH_NODE *hashCreate();
  void str_treatment(char* str_in);
  int string_already(char *str);
  int search_already(char *str);
+ char* str_treatment_vector(char *str);
+ char* str_treatment_vector_lenght(char *str);
+ 
+
 
 #endif
 // END

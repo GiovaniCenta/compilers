@@ -54,7 +54,7 @@ HASH_NODE* make_temp();
 HASH_NODE* make_label();
 void print_asm(FILE *fout);
 
-
+HASH_NODE *hashCreate();
  void str_treatment(char* str_in);
  int string_already(char *str);
  int search_already(char *str);

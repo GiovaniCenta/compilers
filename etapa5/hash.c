@@ -258,3 +258,21 @@ int search_already(char *str)
     }
     return 0;
 }
+
+
+
+HASH_NODE *hashCreate()
+{
+    HASH_NODE *newnode;
+    int nodeAddress = 0;
+
+    
+
+    newnode = (HASH_NODE *)calloc(1, sizeof(HASH_NODE));
+    newnode->type = 1;
+    newnode->text = (char *)calloc(100 + 1, sizeof(char));
+    strcpy(newnode->text, "0");
+    newnode->next = 0;
+    
+    return newnode;
+}

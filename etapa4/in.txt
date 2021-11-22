@@ -1,22 +1,37 @@
 data{
-int:y=0;
-int:k=15;
-int[15]:vetor;
-int[12]:vetor3;
-int[5]:vetor2 = 5 5 5 5 5;
+    int:y=15;
+    int[10]:x;
+
+
+
+
+
+
 }
-
-
-
 
 int:main(){
-    k = function(1,2,3,4);
-    k = 10 + 5;
-    return (5);
+    y=func(10,20,30);
+    y='a' + 10;
+    return(x);
+    
 
 }
 
-int:function(int:p1,int:p2,int:p3){
-    y=15 + "string";
+int:func(int:param1,int:param2,int:param3){
+    print("oi");
+    return(5);
+    if(y>20){
+        print("tchau");
+    };
+    return(x+y);
+    print "oi","tchau","deu";
 }
+
+
+
+
+
+
+
+
 

@@ -44,9 +44,12 @@
 #define TAC_MOVE_VECTOR 43
 #define TAC_MOVE 42
 #define TAC_DECL_VECTOR 44
+#define TAC_DECL_VAR 48
 #define TAC_PARAMETER_LIST 46
+#define TAC_DECL_VECTOR_RANGE 50
 
 #define TAC_IF 47
+#define TAC_PARAMETER_INIT 100
 
 typedef struct tac_node{
     int type;
@@ -63,7 +66,7 @@ void tac_print(TAC* tac);
 void tac_print_backwards(TAC* tac);
 TAC* tac_join(TAC* l1, TAC* l2);
 
-TAC* create_tac_bin_op(int tac_type, TAC* son1, TAC* son2);
+TAC* create_tac_bin_op(int tac_type, TAC* son1, TAC* son2,AST* node,HASH_NODE* hashAux3[]);
 
 
 
