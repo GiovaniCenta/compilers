@@ -1,0 +1,9 @@
+data{
+    int:i=0;
+   }
+char:main(){
+    
+  until(i<50){
+      i=i+12;
+};
+}
